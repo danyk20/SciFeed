@@ -3,6 +3,8 @@ from flask import Flask, request, render_template
 
 app = Flask(__name__)
 
+app.run()
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
