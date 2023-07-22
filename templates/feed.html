@@ -6,8 +6,8 @@
 <body>
     <h1>My Feed</h1>
     <ul>
-        {% for url in value %}
-            <li><a href="{{ url }}">{{ url }}</a></li>
+        {% for item in value %}
+            <li><a href="{{ item.url }}">{{ item.summary }}</a></li>
         {% endfor %}
     </ul>
 </body>

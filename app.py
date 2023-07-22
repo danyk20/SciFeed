@@ -49,7 +49,9 @@ def get_pdfs_from_json(jsonfile, number_of_files=5):
     papers = []
     for entry in jsonfile:
         try:
-            papers.append(Paper(entry))
+            paper = Paper(entry)
+            if paper.url:
+                papers.append(paper)
             if len(papers) == number_of_files:
                 break
         except KeyError:
