@@ -1,6 +1,8 @@
 import requests
 from flask import Flask, request, render_template
 
+from classes import Paper
+
 app = Flask(__name__)
 
 
@@ -44,16 +46,16 @@ def query_cds(query, videos=False):
 
 def get_pdfs_from_json(jsonfile, number_of_files=5):
     """get the first n pdf urls from the search response"""
-    urls = [''] * number_of_files
-    i = 0
+    papers = []
     for entry in jsonfile:
-        for file in entry['files']:
-            if file['full_name'].endswith('.pdf'):
-                urls[i] = file['url']
-                i += 1
-        if i >= number_of_files:
-            break
-    return urls
+        try:
+            papers.append(Paper(entry))
+            if len(papers) == number_of_files:
+                break
+        except KeyError:
+            pass
+        
+    return papers
 
 
 def get_videos_from_json(jsonfile, number_of_files=5, ):
