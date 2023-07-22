@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Result</title>
+    <title>My Feed</title>
 </head>
 <body>
-    <div class="container">
-        <h2>Submitted Text:</h2>
-        <a href={{ value }}>Visit Paper</a>
-    </div>
+    <h1>My Feed</h1>
+    <ul>
+        {% for url in value %}
+            <li><a href="{{ url }}">{{ url }}</a></li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
