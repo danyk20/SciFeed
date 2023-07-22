@@ -11,3 +11,4 @@ class Paper():
     
     def __repr__(self) -> str:
         return f'Paper({self.title} at {self.url})'
+    

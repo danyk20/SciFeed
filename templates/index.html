@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Text Box and Submit Button</title>
+    <title>SciFeed</title>
     <style>
         body {
             display: flex;
@@ -9,14 +9,27 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background-color: #0033A0;
+            display: flex;
+            flex-direction: column; /* Set flex container to be a column */
+            align-items: center; /* Center content horizontally */
+            justify-content: center; /* Center content vertically */
+            height: 100vh; /* Set the container height to fill the viewport */
+        }
+        header {
+            background-color: #0033A0; /* Blue header background color */
+            color: #fff; /* White text color */
+            text-align: center;
+            padding: 30px 0;
+            font-size: x-large;
         }
         .container {
             text-align: center;
             padding: 20px;
+            color: #fff;
             border: 1px solid #ccc;
             border-radius: 5px;
-            background-color: #fff;
+            margin-top: 20px;
         }
         input[type="text"] {
             padding: 10px;
@@ -34,15 +47,40 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+        .collage {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            padding: 20px;
+        }
+        .collage img {
+            max-width: 100%;
+            max-height: 150px;
+        }
     </style>
 </head>
 <body>
+    <header>
+        <h1>What will your research topic be?</h1>
+    </header>
+    
     <div class="container">
         <form method="post">
-            <input type="text" name="textbox" placeholder="Enter your text here">
+            <input type="text" name="textbox" placeholder="Research field...">
             <br>
-            <input type="submit" value="Submit">
+            <input type="submit" value="Search">
         </form>
+    </div>
+    
+    <h2> Don't know where to start? Select and rate pictures that interest you?</h2>
+    <div class="collage">
+        <img src="assets\random_picture_1.jpg" alt="Picture 1">
+        <img src="assets\random_picture_2.png" alt="Picture 2">
+        <img src="assets\random_picture_3.jpg" alt="Picture 3">
+        <img src="assets\random_picture_4.jpg" alt="Picture 4">
+        <img src="assets\random_picture_5.jpg" alt="Picture 5">
+        <img src="assets\random_picture_6.jpg" alt="Picture 6">
     </div>
 </body>
 </html>
