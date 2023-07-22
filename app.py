@@ -3,8 +3,6 @@ from flask import Flask, request, render_template
 
 app = Flask(__name__)
 
-app.run()
-
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -14,6 +12,10 @@ def index():
         print("->" + user_input[0] + "<-")
         return render_template('feed.html', value=user_input[0])
     return render_template('index.html')
+
+
+app.run()
+
 
 def get_html():
     file_path = "templates/index.html"
