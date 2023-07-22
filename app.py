@@ -8,9 +8,8 @@ app = Flask(__name__)
 def index():
     if request.method == 'POST':
         user_input = request.form['textbox']
-        print(query_to_url(user_input))
-        print("->" + user_input[0] + "<-")
-        return render_template('feed.html', value=user_input[0])
+        paper_urls = query_to_url(user_input)
+        return render_template('feed.html', value=paper_urls[0])
     return render_template('index.html')
 
 
