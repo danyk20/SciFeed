@@ -14,9 +14,6 @@ def index():
     return render_template('index.html')
 
 
-app.run()
-
-
 def get_html():
     file_path = "templates/index.html"
 
@@ -84,3 +81,6 @@ def query_to_url(query, videos=False, number_of_results=5):
         return get_videos_from_json(jsonfile, number_of_files=number_of_results)
     else:
         return get_pdfs_from_json(jsonfile, number_of_files=number_of_results)
+
+
+app.run()
