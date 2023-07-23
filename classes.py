@@ -32,8 +32,8 @@ class Video():
         media = jsonelement['electronic_location']
         for file in media:
             try:
-                if media['uri'].endswith('.mp4'):
-                    self.urls.append(media['uri'])
+                if file['uri'].endswith('.mp4'):
+                    self.urls.append(file['uri'])
             except KeyError:
                 pass
         self.url = self.urls[0] if len(self.urls) > 0 else None
