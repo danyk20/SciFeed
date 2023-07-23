@@ -20,20 +20,24 @@
 </head>
 <body>
     <h1>My Feed</h1>
-    <ul>
-        {% for item in papers %}
-            <li><a href="{{ item.url }}">{{ item.summary }}</a></li>
-        {% endfor %}
-    </ul>
+    <div class="container">
+        <ul>
+            {% for item in papers %}
+                <li><a href="{{ item.url }}">{{ item.summary }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
 
     <h2 style="color: white;">Recommended Videos</h2>
+    <div class="container">
         {% for item in videos %}
-            <video controls width="640" height="360">
-                <source src="{{ item.url }}" type="video/mp4">
+            <video controls width="320" height="180">
+                <source src="{{ item }}" type="video/mp4">
                 <!-- Add more <source> elements with different video formats for cross-browser support -->
                 Your browser does not support the video tag.
-                Should be {{ item.title }}
             </video>
         {% endfor %}
+    </div>
 </body>
 </html>
