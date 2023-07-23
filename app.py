@@ -15,6 +15,10 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/moodBoard', methods=['GET', 'POST'])
+def mood():
+    return render_template('mood_board.html')
+
 def get_html():
     file_path = "templates/index.html"
 
