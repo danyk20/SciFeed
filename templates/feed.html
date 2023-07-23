@@ -14,20 +14,25 @@
         flex-direction: column; /* Set flex container to be a column */
         align-items: center; /* Center content horizontally */
         justify-content: center; /* Center content vertically */
-        height: 100vh; /* Set the container height to fill the viewport */
     }
+
+    .paper-container {
+            background-color: white;
+            width: 150px; /* Set the desired width for each entry container */
+            display: inline-block; /* Display the containers side by side */
+            margin: 10px; /* Add some spacing between the containers */
+        }
     </style>
 </head>
 <body>
     <h1 style="color: white;">My Feed</h1>
     <div class="container" style="background-color: #999999;">
-        <ul>
             {% for item in papers %}
-            <div class="container" style="background-color: white; width: 150;"></div>
-                {{item.summary}}
-                <li><a href="{{ item.url }}"> Go to the paper...</a></li>
+            <div class="paper-container">
+                <p>{{item.summary}}</p>
+                <p><a href="{{ item.url }}"> Go to the paper...</a></p>
+            </div>
             {% endfor %}
-        </ul>
     </div>
 
     <div>
@@ -39,11 +44,14 @@
     <h2 style="color: white;">Recommended Videos</h2>        
     {% for item in videos %}
         <div class="container">
+            <label class="video-title"> {{item.title}}</label>
+            <div class="video-container"> 
             <video controls width="320" height="180" title="{{item.title}}">
                 <source src="{{ item.url }}" type="video/mp4" title="{{item.title}}">
                 <!-- Add more <source> elements with different video formats for cross-browser support -->
                 Your browser does not support the video tag.
             </video>
+            </div>
         </div>
     {% endfor %}
     
