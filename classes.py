@@ -5,6 +5,7 @@ class Paper():
     def __init__(self, jsonelement) -> None:
 
         self.title = jsonelement['title']['title']
+        # to fix abstract = none
         self.abstract = jsonelement['abstract']['summary']
         self.url = None
         self.summary = get_summary(self.abstract)
