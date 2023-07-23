@@ -1,0 +1,6 @@
+/* Apply styles to the input element */
+input[type="text"] {
+  font-size: 20px; /* Adjust the font size to make the text bigger */
+  width: 100%; /* Optional: Make the input field take the full available width */
+  height: 50px; /* Adjust the height to make the input field bigger */
+}

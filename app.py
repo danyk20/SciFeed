@@ -1,9 +1,13 @@
 import requests
 from flask import Flask, request, render_template
 
+from answers import qa_model
+from chatboot import read_pdf_from_url, download_pdf_from_link
 from classes import Paper
 
 app = Flask(__name__)
+# pdf_url = "https://cds.cern.ch/record/2863895/files/2307.01612.pdf"  # Replace with the actual URL of the PDF
+
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -14,10 +18,26 @@ def index():
         return render_template('feed.html', value=paper_urls)
     return render_template('index.html')
 
+@app.route('/ask')
+def ask():
+    return render_template('ask.html')
+
 
 @app.route('/moodBoard', methods=['GET', 'POST'])
 def mood():
     return render_template('mood_board.html')
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    paper_text = read_pdf_from_url(request.form['paper_url'])
+    user_input = request.form['user_input']
+    if user_input.lower() == "exit":
+        response = "Chatbot: Goodbye!"
+    else:
+        answers = qa_model(question=user_input, context=paper_text)
+        response = "Chatbot answer: " + answers['answer']
+        response += " - I am " + str(round(answers['score'] * 100, 2)) + '% confident with that answer'
+    return render_template('chat.html', response=response)
 
 def get_html():
     file_path = "templates/index.html"

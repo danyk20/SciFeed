@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot Web Interface</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <h1>Chatbot Web Interface</h1>
+    <p>I am your personal chatbot. Feel free to ask me anything related to the paper you used as input.</p>
+    <form action="/chat" method="post">
+        <label for="paper_url">Enter paper URL here:</label><br>
+        <input type="text" name="paper_url" id="paper_url"><br>
+        <label for="user_input">Your question:</label><br>
+        <input type="text" name="user_input" id="user_input"><br>
+        <input type="submit" value="Ask">
+    </form>
+</body>
+</html>
