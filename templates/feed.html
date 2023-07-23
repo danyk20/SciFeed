@@ -34,17 +34,17 @@
         </a>
     </div>
 
-    <h2 style="color: white;">Recommended Videos</h2>
-    <div class="container">
-        {{item.title}}
-        {% for item in videos %}
-            <video controls width="320" height="180">
-                <source src="{{ item.url }}" type="video/mp4">
+    <h2 style="color: white;">Recommended Videos</h2>        
+    {% for item in videos %}
+        <div class="container">
+            <video controls width="320" height="180" title="{{item.title}}">
+                <source src="{{ item.url }}" type="video/mp4" title="{{item.title}}">
                 <!-- Add more <source> elements with different video formats for cross-browser support -->
                 Your browser does not support the video tag.
             </video>
-        {% endfor %}
-    </div>
+        </div>
+    {% endfor %}
+    
     
 </body>
 </html>
