@@ -19,8 +19,8 @@
     </style>
 </head>
 <body>
-    <h1>My Feed</h1>
-    <div class="container">
+    <h1 style="color: white;">My Feed</h1>
+    <div class="container" style="background-color: #999999;">
         <ul>
             {% for item in papers %}
                 <li><a href="{{ item.url }}">{{ item.summary }}</a></li>
