@@ -15,7 +15,8 @@ def index():
     if request.method == 'POST':
         user_input = request.form['textbox']
         paper_urls = query_to_url(user_input)
-        return render_template('feed.html', value=paper_urls)
+        video_urls = query_to_url(user_input, videos=True, number_of_results=3) 
+        return render_template('feed.html', papers=paper_urls, videos = video_urls)
     return render_template('index.html')
 
 @app.route('/ask')
