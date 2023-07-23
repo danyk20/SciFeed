@@ -23,7 +23,9 @@
     <div class="container" style="background-color: #999999;">
         <ul>
             {% for item in papers %}
-                <li><a href="{{ item.url }}">{{ item.summary }}</a></li>
+            <div class="container" style="background-color: white; width: 150;"></div>
+                {{item.summary}}
+                <li><a href="{{ item.url }}"> Go to the paper...</a></li>
             {% endfor %}
         </ul>
     </div>
