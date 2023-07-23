@@ -16,8 +16,10 @@
             justify-content: center; /* Center content vertically */
             font-family: "Poppins", "PT Sans", Calibri, Tahoma, sans-serif;
         }
-        .input {
+        .inputbox {
             background-color: #999999;
+            width: 500px;
+            height: 80px;
         }
     </style>
 </head>
@@ -26,9 +28,9 @@
     <p>I am your personal chatbot. Feel free to ask me anything related to the paper you used as input.</p>
     <form action="/chat" method="post">
         <label for="paper_url">Enter paper URL here:</label><br>
-        <input type="text" name="paper_url" id="paper_url"><br>
+        <input class="inputbox" type="text" name="paper_url" id="paper_url"><br>
         <label for="user_input">Your question:</label><br>
-        <input type="text" name="user_input" id="user_input"><br>
+        <input class="inputbox" type="text" name="user_input" id="user_input"><br>
         <input type="submit" value="Ask">
     </form>
 </body>
