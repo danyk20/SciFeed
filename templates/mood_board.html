@@ -22,9 +22,10 @@
 </head>
 <body>
     <h1>Don't know what you want to research? Create your own mood board and we'll suggest some topics to you!</h1>
-    <p>Select an image by clicking on it. Click and drag the corner to resize the image.</p>
+    <p>Select an image that you want in your mood board by clicking on it. <br>
+		Click and drag the corner to resize the image based on how important that image feels to the vibe you are looking for.</p>
     
-    <!-- Display the images -->
+    <!--Display the images that the user can select for the mood board-->
     <div class="image-container" id="image-container-1">
         <img src="../static/images/acc_beam_det_part.png" class="resizable" id="image-1"
              data-categories="Accelerators|Beam systems|Detectors">
@@ -66,9 +67,11 @@
              data-categories="Magnets|Materials|Detectors">
     </div>
 
+	<!--The user selects the button after choosing all the pictures they want, to prompt the recommendation-->
 	<button id="show-recommendations-button">Show me recommendations!</button>
     <div id="recommendations"></div>
 
+	<!--Takes the user back to the querying interface for more specific searches-->
 	<div class="container">
 		<p>Want to explore one of these topics some more? <br>
 			Go to our querying interface to get some easy-to-digest information about the frontiers of research!</p>
@@ -79,7 +82,7 @@
 
     <script>
 		document.addEventListener('DOMContentLoaded', () => {
-			// Function to enable image resizing
+			// Allows the user to resize the images for the mood board
 			function enableResizing(image) {
 				const container = image.parentElement;
 				let isResizing = false;
@@ -109,16 +112,28 @@
 				});
 			}
 
+			// Keeps track of which images the user has selected
 			function handleImageSelection(image) {
-				// Toggle the 'selected' class when the image is clicked
 				image.classList.toggle('selected');
 			}
 
 			// Dictionary to store the tags and their weightages based on user selection
 			let weighting = {};
 
+			// List which will store descending order of weightages for the respective categories
 			let weightingArray = [];
 
+			// Broad categories that the images are tagged with
+			let categories = [
+				'Accelerators', 'Beam systems', 'Cryogenics', 'Detectors', 
+				'Electronics', 'Industrial Controls & Simulations', 'Cosmology & Astroparticle Physics',
+				'Information & Communication Technology', 'Magnets', 
+				'Biophysics', 'Materials', 'Mechanics', 
+				'Lasers', 'Microelectronics', 'Particle Tracking & Radiation Monitoring',
+				'Radio Frequency Technology', 'Superconductivity', 'Theoretical Physics'
+			]
+
+			// The subcategories that relate to the image categories
 			let subcategory_mapping = {
 				'Accelerators': 'LHC, Synchotron, Linear Accelerators, Linear Colliders',
 				'Beam systems': 'Beam line, Jets, Collimators, Proton beams, DAQ, DQM',
@@ -140,60 +155,40 @@
 				'Theoretical Phyiscs': 'Standard Model, Beyond the Standard Model, String Theory, Higgs boson, Energy'
 			}
 
-			let categories = [
-				'Accelerators', 'Beam systems', 'Cryogenics', 'Detectors', 
-				'Electronics', 'Industrial Controls & Simulations', 'Cosmology & Astroparticle Physics',
-				'Information & Communication Technology', 'Magnets', 
-				'Biophysics', 'Materials', 'Mechanics', 
-				'Lasers', 'Microelectronics', 'Particle Tracking & Radiation Monitoring',
-				'Radio Frequency Technology', 'Superconductivity', 'Theoretical Physics'
-			]
-
-			// Function to get the categories for an image
+			// Gets the categories for an image
 			function getImageCategories(image) {
 				const categoriesStr = image.getAttribute('data-categories');
 				return categoriesStr.split('|');
 			}
 
-			// Call the function for each resizable image
+			// Call the function for each image so it can be selected, resized, and scanned for categories
 			const resizableImages = document.querySelectorAll('.resizable');
 			resizableImages.forEach((image, index) => {
 				enableResizing(image);
 
-				// Add a click event listener to handle image selection
 				image.addEventListener('click', () => {
 					handleImageSelection(image);
 
-					// Get the categories for the selected image
+					// Changes the weight of the categories based on the image size
 					const selectedCategories = getImageCategories(image);
 					selectedCategories.forEach(tag => {
 						const currentWeight = weighting[tag] || 0;
 						weighting[tag] = currentWeight + image.clientWidth * image.clientHeight;
 					});
 
+					// Adds the dictionary items to an array which also stores the weight
 					weightingArray = Object.entries(weighting);
-					weightingArray.sort((a, b) => b[1] - a[1]);
-					console.log('Sorted List:', weightingArray);
-
-					const resultDisplay = document.getElementById('result-display');
-
-					resultDisplay.innerHTML = `
-					<p>It seems like the first thing you may be interested in is: ${weightingArray[0][0]}</p>
-					<p>Another topic of interest may be: ${weightingArray[1][0]}</p>
-					`;
 				});
 			});
 
-			// Get the button element and recommendations div
 			const showRecommendationsButton = document.getElementById('show-recommendations-button');
 			const recommendationsDiv = document.getElementById('recommendations');
 
-			// Add a click event listener to the button
 			showRecommendationsButton.addEventListener('click', () => {
-				// Sort the array based on the second element (value) of each pair in reverse order
+				// Sorts the array into a list with a descending order of weight
 				weightingArray.sort((a, b) => b[1] - a[1]);
 
-				// Generate the HTML content for the recommendations
+				// Returns the recommended categories in descending order of weight to the user
 				let recommendationsHTML = '';
 				for (let i = 0; i < Math.min(3, weightingArray.length); i++) {
 					recommendationsHTML += `<p>Area of interest ${i + 1}: ${weightingArray[i][0]}</p> 
