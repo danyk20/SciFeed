@@ -21,3 +21,22 @@ class Paper():
 
     def __repr__(self) -> str:
         return f"\{'title':'{self.title}',  'url':'{self.url}', 'summary':{self.summary}\}"
+
+class Video():
+    def __init__(self, jsonelement) -> None:
+
+        self.title = jsonelement['title']['title']
+        # to fix abstract = none
+        self.abstract = jsonelement['abstract']['summary']
+        self.urls = []
+        media = jsonelement['electronic_location']
+        for file in media:
+            try:
+                if media['uri'].endswith('.mp4'):
+                    self.urls.append(media['uri'])
+            except KeyError:
+                pass
+        self.url = self.urls[0] if len(self.urls) > 0 else None
+
+    def __repr__(self) -> str:
+        return f"\{'title':'{self.title}',  'url':'{self.url}'\}"

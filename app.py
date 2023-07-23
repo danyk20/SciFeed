@@ -3,7 +3,7 @@ from flask import Flask, request, render_template
 
 from answers import qa_model
 from chatboot import read_pdf_from_url, download_pdf_from_link
-from classes import Paper
+from classes import Paper, Video
 
 app = Flask(__name__)
 # pdf_url = "https://cds.cern.ch/record/2863895/files/2307.01612.pdf"  # Replace with the actual URL of the PDF
@@ -87,18 +87,17 @@ def get_pdfs_from_json(jsonfile, number_of_files=5):
 
 def get_videos_from_json(jsonfile, number_of_files=5, ):
     """get the first n video urls from the search response"""
-    urls = [''] * number_of_files
-    i = 0
+    videos=[]
     for entry in jsonfile:
         try:
-            if 'video' in entry['medium']['material']:
-                urls[i] = entry['electronic_location'][1]['uri']
-                i += 1
+            video = Video(entry)
+            if video.url:
+                videos.append(video)
+            if len(videos) == number_of_files:
+                break
         except KeyError:
             pass
-        if i == number_of_files:
-            break
-    return urls
+    return videos
 
 
 def query_to_url(query, videos=False, number_of_results=5):
