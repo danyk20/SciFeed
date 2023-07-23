@@ -6,7 +6,12 @@ class Paper():
 
         self.title = jsonelement['title']['title']
         # to fix abstract = none
-        self.abstract = jsonelement['abstract']['summary']
+        abstract = self.title
+        try:
+            abstract = jsonelement['abstract']['summary']
+        except Exception as e:
+            print('No abstract')
+        self.abstract = abstract
         self.url = None
         self.summary = get_summary(self.abstract)
         files = jsonelement['files']
