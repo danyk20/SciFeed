@@ -4,17 +4,23 @@
     <title>Chatbot Web Interface</title>
     <link rel="stylesheet" href="../static/styles.css">
     <style>
+        #loading-text {
+            display: none;
+        }
+
         body {
             margin: 0;
             background-color: #0033A0;
             color: white;
             font-family: "Poppins", "PT Sans", Calibri, Tahoma, sans-serif;
         }
+
         .inputbox {
             background-color: #999999;
             width: 100%;
             height: 80px;
         }
+
         .file-upload-container {
             margin-top: 20px;
             border: 2px dashed #ccc;
@@ -22,110 +28,158 @@
             text-align: center;
             cursor: pointer;
         }
+
         .file-upload-container.dragover {
             background-color: #555;
+        }
+
+        .loading {
+            display: none;
+            border: 6px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 6px solid #4CAF50;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Chatbot Web Interface</h1>
-    <p>I am your personal chatbot. Feel free to ask me anything related to the paper you used as input.</p>
-    <form action="/chat" method="post" enctype="multipart/form-data">
-        <p>Select input type:</p> <label for="url_radio">
-            <input type="radio" id="url_radio" name="paper_input_type" value="url" checked>
-            Enter paper URL
-        </label><br>
-        <label for="file_radio">
-            <input type="radio" id="file_radio" name="paper_input_type" value="file">
-            Upload local file
-        </label><br><br>
+<h1>Chatbot Web Interface</h1>
+<p>I am your personal chatbot. Feel free to ask me anything related to the paper you used as input.</p>
+<form action="/chat" method="post" enctype="multipart/form-data">
+    <p>Select input type:</p> <label for="url_radio">
+    <input type="radio" id="url_radio" name="paper_input_type" value="url" checked>
+    Enter paper URL
+</label><br>
+    <label for="file_radio">
+        <input type="radio" id="file_radio" name="paper_input_type" value="file">
+        Upload local file
+    </label><br><br>
 
-        <div id="url_input_section">
-            <label for="paper_url">Enter paper URL here:</label><br>
-            <input class="inputbox" type="text" name="paper_url" id="paper_url"><br>
+    <div id="url_input_section">
+        <label for="paper_url">Enter paper URL here:</label><br>
+        <input class="inputbox" type="text" name="paper_url" id="paper_url"><br>
+    </div>
+
+    <div id="file_input_section" style="display:none;">
+        <label for="paper_file">Select paper file:</label><br>
+        <div class="file-upload-container" id="drop_area">
+            <p>Drag & drop a file here, or click to select</p>
+            <input type="file" name="paper_file" id="paper_file" accept=".pdf,.doc,.docx,.txt" style="display:none;">
         </div>
+        <p id="file_name"></p>
+    </div>
 
-        <div id="file_input_section" style="display:none;">
-            <label for="paper_file">Select paper file:</label><br>
-            <div class="file-upload-container" id="drop_area">
-                <p>Drag & drop a file here, or click to select</p>
-                <input type="file" name="paper_file" id="paper_file" accept=".pdf,.doc,.docx,.txt" style="display:none;">
-            </div>
-            <p id="file_name"></p>
-        </div>
+    <label for="user_input">Your question:</label><br>
+    <input class="inputbox" type="text" name="user_input" id="user_input"><br>
+    <input type="submit" value="Ask" onclick="showLoading()">
+</form>
 
-        <label for="user_input">Your question:</label><br>
-        <input class="inputbox" type="text" name="user_input" id="user_input"><br>
-        <input type="submit" value="Ask">
-    </form>
+<div id="loading" class="loading">
+    <div class="spinner"></div>
 
-    <script>
-        const urlRadio = document.getElementById('url_radio');
-        const fileRadio = document.getElementById('file_radio');
-        const urlInputSection = document.getElementById('url_input_section');
-        const fileInputSection = document.getElementById('file_input_section');
-        const dropArea = document.getElementById('drop_area');
-        const paperFile = document.getElementById('paper_file');
-        const fileNameDisplay = document.getElementById('file_name');
+</div>
+<p id="loading-text">I am thinking... Please wait!</p>
+<script>
+    function showLoading() {
+        document.getElementById("user_input").style.display = "none";
+        document.getElementById("loading").style.display = "block";
+        document.getElementById("loading-text").style.display = "block";
+    }
 
-        function toggleInputSections() {
-            if (urlRadio.checked) {
-                urlInputSection.style.display = 'block';
-                fileInputSection.style.display = 'none';
-                paperFile.value = '';
-                fileNameDisplay.textContent = '';
-            } else {
-                urlInputSection.style.display = 'none';
-                fileInputSection.style.display = 'block';
-                document.getElementById('paper_url').value = '';
-            }
+    window.onbeforeunload = function () {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("loading-text").style.display = "none";
+        document.getElementById("user_input").style.display = "inline-block"
+    }
+
+    const urlRadio = document.getElementById('url_radio');
+    const fileRadio = document.getElementById('file_radio');
+    const urlInputSection = document.getElementById('url_input_section');
+    const fileInputSection = document.getElementById('file_input_section');
+    const dropArea = document.getElementById('drop_area');
+    const paperFile = document.getElementById('paper_file');
+    const fileNameDisplay = document.getElementById('file_name');
+
+    function toggleInputSections() {
+        if (urlRadio.checked) {
+            urlInputSection.style.display = 'block';
+            fileInputSection.style.display = 'none';
+            paperFile.value = '';
+            fileNameDisplay.textContent = '';
+        } else {
+            urlInputSection.style.display = 'none';
+            fileInputSection.style.display = 'block';
+            document.getElementById('paper_url').value = '';
         }
+    }
 
-        toggleInputSections();
+    toggleInputSections();
 
-        urlRadio.addEventListener('change', toggleInputSections);
-        fileRadio.addEventListener('change', toggleInputSections);
+    urlRadio.addEventListener('change', toggleInputSections);
+    fileRadio.addEventListener('change', toggleInputSections);
 
-        dropArea.addEventListener('click', () => {
-            paperFile.click();
-        });
+    dropArea.addEventListener('click', () => {
+        paperFile.click();
+    });
 
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, preventDefaults, false);
-            document.body.addEventListener(eventName, preventDefaults, false); // Prevent default for entire body
-        });
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false); // Prevent default for entire body
+    });
 
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => dropArea.classList.add('dragover'), false);
-        });
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.classList.add('dragover'), false);
+    });
 
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => dropArea.classList.remove('dragover'), false);
-        });
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.classList.remove('dragover'), false);
+    });
 
-        dropArea.addEventListener('drop', handleDrop, false);
+    dropArea.addEventListener('drop', handleDrop, false);
 
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        paperFile.files = files;
+        updateFileNameDisplay();
+    }
+
+    paperFile.addEventListener('change', updateFileNameDisplay);
+
+    function updateFileNameDisplay() {
+        if (paperFile.files.length > 0) {
+            fileNameDisplay.textContent = `Selected file: ${paperFile.files[0].name}`;
+        } else {
+            fileNameDisplay.textContent = '';
         }
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            paperFile.files = files;
-            updateFileNameDisplay();
-        }
-
-        paperFile.addEventListener('change', updateFileNameDisplay);
-
-        function updateFileNameDisplay() {
-            if (paperFile.files.length > 0) {
-                fileNameDisplay.textContent = `Selected file: ${paperFile.files[0].name}`;
-            } else {
-                fileNameDisplay.textContent = '';
-            }
-        }
-    </script>
+    }
+</script>
 </body>
 </html>

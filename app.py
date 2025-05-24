@@ -2,8 +2,7 @@ from typing import List
 
 from flask import Flask, request, render_template
 
-from answers import qa_model
-from chatboot import read_pdf_from_url, download_pdf_from_link, read_pdf_from_file
+from chatboot import read_pdf_from_url, read_pdf_from_file, qa_model
 from classes import Paper, Video
 from config import NUMBER_OF_PAPERS, NUMBER_OF_VIDEOS
 from utils import query_to_url
@@ -50,8 +49,8 @@ def chat() -> str:
         response = "Chatbot: Goodbye!"
     else:
         answers = qa_model(question=user_input, context=paper_text)
-        response = "Chatbot answer: " + answers['answer']
-        response += " - I am " + str(round(answers['score'] * 100, 2)) + '% confident with that answer'
+        response = user_input + " -> Chatbot answer: " + answers['answer']
+        response += " [" + str(round(answers['score'] * 100, 2)) + '% confidence]'
     return render_template('chat.html', response=response)
 
 

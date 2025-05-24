@@ -8,6 +8,7 @@
     <button onclick="goBack()">Change the question</button>
     <script>
         function goBack() {
+            sessionStorage.setItem('cameFromBack', 'true');
             window.history.back();
         }
     </script>

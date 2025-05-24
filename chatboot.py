@@ -1,7 +1,8 @@
 import requests
 from PyPDF2 import PdfReader
+from transformers import pipeline
 
-from answers import qa_model
+qa_model = pipeline("question-answering")
 
 
 def download_pdf_from_link(url: str, save_path: str):
@@ -66,21 +67,3 @@ def read_pdf_from_file(path: str) -> str:
     except Exception as e:
         print(f"Error: {e}")
         return ""
-
-
-def chatbot(paper_text):
-    while True:
-        print("I am your personal chat-boot fell free to ask me anything related to the paper you used as input.")
-        user_input = input("Your question: ")
-        if user_input.lower() == "exit":
-            print("Chatbot: Goodbye!")
-            break
-        else:
-            print("Give me a sec, I am thinking...")
-            answers = qa_model(question=user_input, context=paper_text)
-            print("Chatbot answer: " + answers['answer'])
-            print("I am " + str(round(answers['score'] * 100, 2)) + '% confident')
-
-# Example usage:
-# pdf_url = "https://is.muni.cz/auth/th/n3kmo/Automated_problem_generation_for_cybersecurity_game_Daniel_Kosc.pdf"  # Replace with the actual URL of the PDF
-# chatbot(read_pdf_from_url(pdf_url))
