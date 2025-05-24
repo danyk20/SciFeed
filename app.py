@@ -5,12 +5,9 @@ from flask import Flask, request, render_template
 from chatboot import read_pdf_from_url, read_pdf_from_file, qa_model
 from classes import Paper, Video
 from config import NUMBER_OF_PAPERS, NUMBER_OF_VIDEOS
-from utils import query_to_url
+from utils import query_to_url, save_and_get_path
 
 app = Flask(__name__)
-
-
-# pdf_url = "https://cds.cern.ch/record/2863895/files/2307.01612.pdf"  # Replace with the actual URL of the PDF
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -39,7 +36,7 @@ def chat() -> str:
     if paper_input_type == "url":
         paper_text = read_pdf_from_url(request.form['paper_url'])
     elif paper_input_type == 'file':
-        path = request.files['paper_file']
+        path: str = save_and_get_path(request.files['paper_file'])
         paper_text = read_pdf_from_file(path)
     else:
         print("Unsupported input type.")

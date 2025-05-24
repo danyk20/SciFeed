@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Chatbot Web Interface</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -100,11 +100,6 @@
             cursor: pointer;
             border-radius: 8px;
             transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-
-        .file-upload-container.dragover {
-            background-color: #e0e0e0;
-            border-color: var(--primary-blue);
         }
 
         .file-upload-container p {
@@ -241,7 +236,6 @@
             document.getElementById("loading-text").style.display = "block";
         }
 
-        // Reset loading state if user navigates back or refreshes
         window.onbeforeunload = function () {
             document.getElementById("loading").style.display = "none";
             document.getElementById("loading-text").style.display = "none";
@@ -260,26 +254,24 @@
             if (urlRadio.checked) {
                 urlInputSection.style.display = 'block';
                 fileInputSection.style.display = 'none';
-                paperFile.value = ''; // Clear file input
+                paperFile.value = '';
                 fileNameDisplay.textContent = '';
             } else {
                 urlInputSection.style.display = 'none';
                 fileInputSection.style.display = 'block';
-                document.getElementById('paper_url').value = ''; // Clear URL input
+                document.getElementById('paper_url').value = '';
             }
         }
-        toggleInputSections(); // Call on page load
+        toggleInputSections();
         urlRadio.addEventListener('change', toggleInputSections);
         fileRadio.addEventListener('change', toggleInputSections);
 
-        // File drag and drop functionality
         dropArea.addEventListener('click', () => {
             paperFile.click();
         });
 
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropArea.addEventListener(eventName, preventDefaults, false);
-            // document.body.addEventListener(eventName, preventDefaults, false); // Removed to allow other drag/drop on body
         });
 
         ['dragenter', 'dragover'].forEach(eventName => {

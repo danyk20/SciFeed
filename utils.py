@@ -1,9 +1,10 @@
+import os
 from typing import List, Dict, Any
 
 import requests
 
 from classes import Paper, Video
-from config import NUMBER_OF_PAPERS, NUMBER_OF_VIDEOS, CERN_DOCUMENT_SERVER_URL, REQUESTED_RESULTS
+from config import NUMBER_OF_PAPERS, NUMBER_OF_VIDEOS, CERN_DOCUMENT_SERVER_URL, REQUESTED_RESULTS, TMP_FOLDER
 
 
 def get_html() -> str:
@@ -94,6 +95,20 @@ def get_videos_from_json(jsonfile, number_of_files=NUMBER_OF_VIDEOS) -> List[Vid
         except KeyError:
             pass
     return videos
+
+
+def save_and_get_path(file_storage_object):
+    """
+    Saves a FileStorage object to the specified upload folder and returns its path.
+
+    :param file_storage_object: The werkzeug.datastructures.FileStorage object.
+
+    :returns: The full path to the saved file, or None if no file was provided.
+    """
+    file_path = os.path.join(TMP_FOLDER, file_storage_object.filename)
+    os.makedirs(TMP_FOLDER, exist_ok=True)
+    file_storage_object.save(file_path)
+    return file_path
 
 
 def query_to_url(query: str, number_of_results: int, videos=False) -> List[Paper | Video]:

@@ -1,8 +1,10 @@
+import os.path
+
 import requests
 from PyPDF2 import PdfReader
 from transformers import pipeline
 
-from config import QUESTIONING_MODEL
+from config import QUESTIONING_MODEL, TMP_FOLDER
 
 qa_model = pipeline("question-answering", QUESTIONING_MODEL)
 
@@ -42,7 +44,8 @@ def read_pdf_from_url(url: str) -> str:
     :return: A string containing all extracted text from the PDF, or an empty string if an error occurs.
     """
     try:
-        path = 'tmp/paper.pdf'
+        os.makedirs(TMP_FOLDER, exist_ok=True)
+        path = os.path.join(TMP_FOLDER, "paper.pdf")
         download_pdf_from_link(url, path)
     except Exception as e:
         print(f"Error: {e}")
