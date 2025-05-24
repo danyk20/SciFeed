@@ -7,19 +7,6 @@ from classes import Paper, Video
 from config import NUMBER_OF_PAPERS, NUMBER_OF_VIDEOS, CERN_DOCUMENT_SERVER_URL, REQUESTED_RESULTS, TMP_FOLDER
 
 
-def get_html() -> str:
-    file_path = "templates/index.html"
-
-    try:
-        with open(file_path, "r") as file:
-            content = file.read()
-    except FileNotFoundError:
-        print(f"File '{file_path}' not found.")
-    except IOError:
-        print(f"Error reading the file '{file_path}'.")
-    return content
-
-
 def query_cds(query: str, videos: bool = False) -> List[Dict[str, Any]]:
     """
     Queries the CERN Document Server (CDS) for research papers or videos.
@@ -83,7 +70,16 @@ def get_pdfs_from_json(jsonfile: List[Dict[str, Any]], number_of_files: int = NU
 
 
 def get_videos_from_json(jsonfile, number_of_files=NUMBER_OF_VIDEOS) -> List[Video]:
-    """get the first n video urls from the search response"""
+    """
+    Extracts a specified number of video objects from a JSON response.
+
+    :param jsonfile: The JSON data from which to extract video information.
+    Each dictionary is expected to contain keys necessary to construct a `Video` object.
+    :param number_of_files: The maximum number of `Video` objects to return.
+    Defaults to `NUMBER_OF_VIDEOS` if not specified.
+    :return: A list of `Video` objects.
+    The list may contain fewer than `number_of_files` if not enough valid video entries are found in the `jsonfile`.
+    """
     videos: list[Video] = []
     for entry in jsonfile:
         try:
@@ -112,8 +108,14 @@ def save_and_get_path(file_storage_object):
 
 
 def query_to_url(query: str, number_of_results: int, videos=False) -> List[Paper | Video]:
-    """returns the file urls of the first 'number_of_results' results, should be <=10
-    Can be toggled to either return PDFs or video urls"""
+    """
+    Retrieves a list of Paper or Video objects based on a search query.
+
+    :param query: The search query string.
+    :param number_of_results: The maximum number of results to return.
+    :param videos: If True, it returns video URLs; otherwise, returns PDF URLs.
+    :return: A list of Paper or Video objects.
+    """
     jsonfile = query_cds(query, videos=videos)
     if videos:
         return get_videos_from_json(jsonfile, number_of_files=number_of_results)
