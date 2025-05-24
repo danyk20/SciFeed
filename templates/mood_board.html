@@ -2,203 +2,425 @@
 <html>
 <head>
     <title>Image Selection and Resizing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0033A0; /* Dominant Blue Background */
+            color: #fff; /* White Text for Readability */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px; /* Add some padding around the content */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+
+        h1, h2, p {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 15px;
+            max-width: 900px; /* Limit width for better readability */
+        }
+
+        h1 {
+            font-size: 2.2em;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Space between image containers */
+            padding: 20px 0;
+            max-width: 1200px; /* Max width for the gallery */
+            width: 100%;
+        }
+
         .image-container {
+            background-color: #e0f7fa; /* Light blue background for image card */
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
             display: inline-block;
-            margin: 10px;
-            border: 2px solid #ccc;
-            padding: 5px;
+            cursor: pointer; /* Default cursor for selection */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+            border: 2px solid transparent; /* Default transparent border */
+            overflow: hidden; /* Ensures content respects border-radius */
+            flex-shrink: 0; /* Prevents shrinking */
+            position: relative; /* Needed for absolute positioning of resize handle or for corner detection */
+        }
+
+        .image-container:hover {
+            transform: translateY(-5px); /* Lift effect on hover */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* More pronounced shadow */
         }
 
         .resizable {
             display: block;
-            max-width: 200px;
+            /* REMOVED: max-width: 200px; */ /* This was causing the issue */
+            width: 200px; /* Set an initial width explicitly */
+            height: auto; /* Let height adjust to maintain aspect ratio initially */
+            border-radius: 5px; /* Slightly rounded corners for images */
+            touch-action: none; /* Prevent browser touch actions like scrolling/zooming */
         }
 
         .selected {
-            border: 4px solid #00f;
+            border-color: #4CAF50; /* Green border for selected images */
+            box-shadow: 0 0 0 4px #4CAF50; /* A glowing effect for selection */
+        }
+
+        /* Styles for the visible resize handle */
+        .resize-handle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            bottom: 0;
+            right: 0;
+            background: rgba(0, 51, 160, 0.7); /* Match dominant blue with transparency */
+            border-radius: 0 0 8px 0; /* Rounded only on the corner */
+            cursor: se-resize;
+            z-index: 10; /* Ensure it's on top */
+        }
+
+        #show-recommendations-button {
+            padding: 12px 25px;
+            font-size: 16px;
+            background-color: #4CAF50; /* Green button */
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        #show-recommendations-button:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+
+        #recommendations {
+            background-color: #e0f7fa; /* Light blue background for recommendations */
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 700px;
+            margin-top: 20px;
+            color: #333; /* Dark text for readability */
+            text-align: left;
+            line-height: 1.8;
+        }
+
+        #recommendations p {
+            color: #333; /* Ensure paragraph text inside recommendations is dark */
+            margin-bottom: 10px;
+        }
+
+        #recommendations p:last-child {
+            margin-bottom: 0;
+        }
+
+        #recommendations p strong {
+            color: #0033A0; /* Highlight important parts in recommendations */
+        }
+
+        /* Container for the 'Explore further' button */
+        .cta-container {
+            background-color: #e0f7fa; /* Light blue background */
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 700px;
+            margin-top: 30px; /* More space above this section */
+            color: #333; /* Dark text */
+            text-align: center;
+        }
+
+        .cta-container p {
+            color: #333; /* Dark text for paragraphs */
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            padding: 12px 25px;
+            font-size: 16px;
+            background-color: #0033A0; /* Blue button */
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none; /* Remove underline for link */
+            display: inline-block; /* Allows padding and margin */
+        }
+
+        .btn-primary:hover {
+            background-color: #002280; /* Darker blue on hover */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            p {
+                font-size: 1em;
+            }
+            .image-gallery {
+                flex-direction: column; /* Stack images vertically on small screens */
+                align-items: center;
+            }
+            .image-container {
+                width: 90%; /* Make image containers take more width */
+                max-width: 300px; /* Limit max width for stacking */
+            }
+            .resizable {
+                max-width: 100%; /* Ensure images fill container */
+            }
+            #recommendations, .cta-container {
+                width: 95%;
+                padding: 15px;
+            }
         }
     </style>
 </head>
 <body>
     <h1>Don't know what you want to research? Create your own mood board and we'll suggest some topics to you!</h1>
     <p>Select an image that you want in your mood board by clicking on it. <br>
-		Click and drag the corner to resize the image based on how important that image feels to the vibe you are looking for.</p>
-    
-    <!--Display the images that the user can select for the mood board-->
-    <div class="image-container" id="image-container-1">
-        <img src="../static/images/acc_beam_det_part.png" class="resizable" id="image-1"
-             data-categories="Accelerators|Beam systems|Detectors">
-    </div>
-	<div class="image-container" id="image-container-2">
-        <img src="../static/images/det_mech_beam.jpg" class="resizable" id="image-2"
-             data-categories="Detectors|Mechanics|Beam systems">
-    </div>
-	<div class="image-container" id="image-container-3">
-        <img src="../static/images/mech_elec.jpg" class="resizable" id="image-3"
-             data-categories="Mechanics|Electronics">
-    </div>
-	<div class="image-container" id="image-container-4">
-        <img src="../static/images/bio_rad.jpeg" class="resizable" id="image-4"
-             data-categories="Biophysics|Radio Frequency Technology">
-    </div>
-	<div class="image-container" id="image-container-5">
-        <img src="../static/images/cos_theo_det.jpeg" class="resizable" id="image-5"
-             data-categories="Cosmology & Astroparticle Physics|Theoretical Physics|Detectors">
-    </div>
-	<div class="image-container" id="image-container-6">
-        <img src="../static/images/cryo_sup.jpeg" class="resizable" id="image-6"
-             data-categories="Cryogenics|Superconductivity">
-    </div>
-	<div class="image-container" id="image-container-7">
-        <img src="../static/images/cryo_sup_mat_mag_det.jpeg" class="resizable" id="image-7"
-             data-categories="Cryogenics|Superconductivity|Materials|Magnets|Detectors">
-    </div>
-	<div class="image-container" id="image-container-8">
-        <img src="../static/images/det_ict_part_ics.jpeg" class="resizable" id="image-8"
-             data-categories="Detectors|Information & Communication Technology|Industrial Controls & Simulations|Particle Tracking & Radiation Monitoring">
-    </div>
-	<div class="image-container" id="image-container-9">
-        <img src="../static/images/las_cryo_mat.jpeg" class="resizable" id="image-9"
-             data-categories="Lasers|Cryogenics|Materials">
-    </div>
-	<div class="image-container" id="image-container-10">
-        <img src="../static/images/mag_mat_det.jpeg" class="resizable" id="image-10"
-             data-categories="Magnets|Materials|Detectors">
+       Click and drag the <strong>bottom-right corner</strong> to resize the image based on how important that image feels to the vibe you are looking for.</p>
+
+    <div class="image-gallery">
+        <div class="image-container" id="image-container-1">
+            <img src="../static/images/acc_beam_det_part.png" class="resizable" id="image-1"
+                 data-categories="Accelerators|Beam systems|Detectors">
+            <div class="resize-handle"></div>
+        </div>
+        <div class="image-container" id="image-container-2">
+            <img src="../static/images/det_mech_beam.jpg" class="resizable" id="image-2"
+                 data-categories="Detectors|Mechanics|Beam systems">
+            <div class="resize-handle"></div>
+        </div>
+        <div class="image-container" id="image-container-3">
+            <img src="../static/images/mech_elec.jpg" class="resizable" id="image-3"
+                 data-categories="Mechanics|Electronics">
+            <div class="resize-handle"></div>
+        </div>
+        <div class="image-container" id="image-container-4">
+            <img src="../static/images/bio_rad.jpeg" class="resizable" id="image-4"
+                 data-categories="Biophysics|Radio Frequency Technology">
+            <div class="resize-handle"></div>
+        </div>
+        <div class="image-container" id="image-container-5">
+            <img src="../static/images/cos_theo_det.jpeg" class="resizable" id="image-5"
+                 data-categories="Cosmology & Astroparticle Physics|Theoretical Physics|Detectors">
+            <div class="resize-handle"></div>
+        </div>
+        <div class="image-container" id="image-container-6">
+            <img src="../static/images/cryo_sup.jpeg" class="resizable" id="image-6"
+                 data-categories="Cryogenics|Superconductivity">
+            <div class="resize-handle"></div>
+        </div>
+        <div class="image-container" id="image-container-7">
+            <img src="../static/images/cryo_sup_mat_mag_det.jpeg" class="resizable" id="image-7"
+                 data-categories="Cryogenics|Superconductivity|Materials|Magnets|Detectors">
+            <div class="resize-handle"></div>
+        </div>
+        <div class="image-container" id="image-container-8">
+            <img src="../static/images/det_ict_part_ics.jpeg" class="resizable" id="image-8"
+                 data-categories="Detectors|Information & Communication Technology|Industrial Controls & Simulations|Particle Tracking & Radiation Monitoring">
+            <div class="resize-handle"></div>
+        </div>
+        <div class="image-container" id="image-container-9">
+            <img src="../static/images/las_cryo_mat.jpeg" class="resizable" id="image-9"
+                 data-categories="Lasers|Cryogenics|Materials">
+            <div class="resize-handle"></div>
+        </div>
+        <div class="image-container" id="image-container-10">
+            <img src="../static/images/mag_mat_det.jpeg" class="resizable" id="image-10"
+                 data-categories="Magnets|Materials|Detectors">
+            <div class="resize-handle"></div>
+        </div>
     </div>
 
-	<!--The user selects the button after choosing all the pictures they want, to prompt the recommendation-->
-	<button id="show-recommendations-button">Show me recommendations!</button>
+    <button id="show-recommendations-button">Show me recommendations!</button>
     <div id="recommendations"></div>
 
-	<!--Takes the user back to the querying interface for more specific searches-->
-	<div class="container">
-		<p>Want to explore one of these topics some more? <br>
-			Go to our querying interface to get some easy-to-digest information about the frontiers of research!</p>
-        <a href="/">
-            <button class="btn btn-primary btn-lg">Explore further!</button>
+    <div class="cta-container">
+       <p>Want to explore one of these topics some more? <br>
+          Go to our querying interface to get some easy-to-digest information about the frontiers of research!</p>
+        <a href="/" class="btn-primary">
+            Explore further!
         </a>
     </div>
 
     <script>
-		document.addEventListener('DOMContentLoaded', () => {
-			// Allows the user to resize the images for the mood board
-			function enableResizing(image) {
-				const container = image.parentElement;
-				let isResizing = false;
-				let originalX, originalY, originalWidth, originalHeight;
+       document.addEventListener('DOMContentLoaded', () => {
+          // Dictionary to store the tags and their weightages based on user selection
+          let weighting = {};
+          // List which will store descending order of weightages for the respective categories
+          let weightingArray = [];
 
-				image.addEventListener('mousedown', (e) => {
-					e.preventDefault();
-					isResizing = true;
-					originalX = e.clientX;
-					originalY = e.clientY;
-					originalWidth = image.clientWidth;
-					originalHeight = image.clientHeight;
-				});
+          // Broad categories that the images are tagged with (kept from your original code)
+          let categories = [
+             'Accelerators', 'Beam systems', 'Cryogenics', 'Detectors',
+             'Electronics', 'Industrial Controls & Simulations', 'Cosmology & Astroparticle Physics',
+             'Information & Communication Technology', 'Magnets',
+             'Biophysics', 'Materials', 'Mechanics',
+             'Lasers', 'Microelectronics', 'Particle Tracking & Radiation Monitoring',
+             'Radio Frequency Technology', 'Superconductivity', 'Theoretical Physics'
+          ];
 
-				document.addEventListener('mousemove', (e) => {
-					if (!isResizing) return;
+          // The subcategories that relate to the image categories (kept from your original code)
+          let subcategory_mapping = {
+             'Accelerators': 'LHC, Synchotron, Linear Accelerators, Linear Colliders',
+             'Beam systems': 'Beam line, Jets, Collimators, Proton beams, DAQ, DQM',
+             'Cryogenics': 'Liquid helium, Superfluids, Liquid nitrogen, Thermal conductivity, Thermal resistance, Superconductors, Cryoengineering',
+             'Detectors': 'CMS, LHCb, ALICE, ATLAS, TOTEM, MoEDAL, LHCf, SND, FASER, Subdetectors, Scintillators, Calorimeters, Trackers, Photomultipliers, Cherenkov detectors, Timepix detector',
+             'Electronics': 'Charge coupled device, Readout systems, Front-end electronics, Analog to digital converter, Digital signal processor, Mean-timer circuits, Gain, Amplifiers, Discriminators, Charge to digital converters (QDC), Time to digital converters (TDC), LED pulsing',
+             'Industrial Controls & Simulations': 'Data acquisition (DAQ), 3D magnetic sensor calibrator, Control and Monitoring Framework, Chemical Register for Environment, Health and Safety (CERES), Radon detectors, Train Inspection Monoral (TIM)',
+             'Cosmology & Astroparticle Physics': 'Dark matter, Neutrino astronomy, Cosmic Microwave Background Radiation, Antimatter, High energy cosmic rays, Supernovae, Gamma-ray astronomy, Dark energy',
+             'Information & Communication Technology': 'ActiWiz, BioDynaMo, CERN VM-FS, CERNbot, FLUKA, Indico, Invenio, REMUS, ROOT, Data Analysis, Artificial Intelligence, Neural Networks',
+             'Magnets': 'Electromagnetism, Dipole magnet, Quadrupole magnet, 3D Magnetic Sensor Calibrator, GaToroid, Magnet Power supplies',
+             'Biophysics': 'BioDynaMo, Particle Therapy, Alpha Therapy, gamma-MRI , Medical ventilators',
+             'Materials': 'Front-end readout, Micro Chemical Vias, Thermal management materials, Thin film coatings',
+             'Mechanics': 'Compact Universal Orbital Cutter, Mounting mechanisms, Precision positioning',
+             'Lasers': 'Heavy ions, Charged particles, Optical lenses, Precision Laser Inclinometer',
+             'Microelectronics': 'PicoTDC, DC-DC converter, Front-end readout electronics, GEMPix, KiCad EDA , Medipix, Micro Chemical Vias, Timepix',
+             'Particle Tracking & Radiation Monitoring': 'Gas electron multiplier, Medipix, Strip SiPM, Timepix',
+             'Radio Frequency Technology': 'Coaxial Pulse Conditioner, Compact Linear Proton Accelerator, Thin film coatings, Gamma rays',
+             'Superconductivity': 'Thin film coatings, Cooling systems',
+             'Theoretical Phyiscs': 'Standard Model, Beyond the Standard Model, String Theory, Higgs boson, Energy'
+          };
 
-					const newWidth = originalWidth + (e.clientX - originalX);
-					const newHeight = originalHeight * (newWidth / originalWidth); // Maintain aspect ratio
+          // Gets the categories for an image
+          function getImageCategories(image) {
+             const categoriesStr = image.getAttribute('data-categories');
+             return categoriesStr.split('|');
+          }
 
-					image.style.width = newWidth + 'px';
-					image.style.height = newHeight + 'px';
-				});
+          // Central function to update weighting based on selection and size
+          function updateWeighting() {
+              weighting = {}; // Reset weighting
+              document.querySelectorAll('.resizable.selected').forEach(selectedImage => {
+                  const selectedCategories = getImageCategories(selectedImage);
+                  selectedCategories.forEach(tag => {
+                      const currentWeight = weighting[tag] || 0;
+                      weighting[tag] = currentWeight + selectedImage.clientWidth * selectedImage.clientHeight;
+                  });
+              });
+              weightingArray = Object.entries(weighting);
+              weightingArray.sort((a, b) => b[1] - a[1]);
+          }
 
-				document.addEventListener('mouseup', () => {
-					isResizing = false;
-				});
-			}
+          // Function to enable resizing and selection
+          function setupImageInteractions(image) {
+             const imageContainer = image.closest('.image-container'); // Get the parent container
+             const resizeHandle = imageContainer.querySelector('.resize-handle'); // Get the specific handle
 
-			// Keeps track of which images the user has selected
-			function handleImageSelection(image) {
-				image.classList.toggle('selected');
-			}
+             let isResizing = false;
+             let originalX, originalY, originalWidth, originalHeight;
+             let clickedForSelection = false; // Flag to check if click was for selection
 
-			// Dictionary to store the tags and their weightages based on user selection
-			let weighting = {};
+             // Mousedown on the image itself (for selection)
+             image.addEventListener('mousedown', (e) => {
+                // Only handle selection click if not clicking the resize handle
+                if (e.target !== resizeHandle) {
+                    e.preventDefault(); // Prevent default drag behavior (e.g., image drag)
+                    clickedForSelection = true;
+                }
+             });
 
-			// List which will store descending order of weightages for the respective categories
-			let weightingArray = [];
+             // Mouseup on the document (to finalize selection click)
+             document.addEventListener('mouseup', () => {
+                 if (clickedForSelection) {
+                     image.classList.toggle('selected');
+                     updateWeighting();
+                     clickedForSelection = false;
+                 }
+             });
 
-			// Broad categories that the images are tagged with
-			let categories = [
-				'Accelerators', 'Beam systems', 'Cryogenics', 'Detectors', 
-				'Electronics', 'Industrial Controls & Simulations', 'Cosmology & Astroparticle Physics',
-				'Information & Communication Technology', 'Magnets', 
-				'Biophysics', 'Materials', 'Mechanics', 
-				'Lasers', 'Microelectronics', 'Particle Tracking & Radiation Monitoring',
-				'Radio Frequency Technology', 'Superconductivity', 'Theoretical Physics'
-			]
 
-			// The subcategories that relate to the image categories
-			let subcategory_mapping = {
-				'Accelerators': 'LHC, Synchotron, Linear Accelerators, Linear Colliders',
-				'Beam systems': 'Beam line, Jets, Collimators, Proton beams, DAQ, DQM',
-				'Cryogenics': 'Liquid helium, Superfluids, Liquid nitrogen, Thermal conductivity, Thermal resistance, Superconductors, Cryoengineering',
-				'Detectors': 'CMS, LHCb, ALICE, ATLAS, TOTEM, MoEDAL, LHCf, SND, FASER, Subdetectors, Scintillators, Calorimeters, Trackers, Photomultipliers, Cherenkov detectors, Timepix detector',
-				'Electronics': 'Charge coupled device, Readout systems, Front-end electronics, Analog to digital converter, Digital signal processor, Mean-timer circuits, Gain, Amplifiers, Discriminators, Charge to digital converters (QDC), Time to digital converters (TDC), LED pulsing',
-				'Industrial Controls & Simulations': 'Data acquisition (DAQ), 3D magnetic sensor calibrator, Control and Monitoring Framework, Chemical Register for Environment, Health and Safety (CERES), Radon detectors, Train Inspection Monoral (TIM)',
-				'Cosmology & Astroparticle Physics': 'Dark matter, Neutrino astronomy, Cosmic Microwave Background Radiation, Antimatter, High energy cosmic rays, Supernovae, Gamma-ray astronomy, Dark energy',
-				'Information & Communication Technology': 'ActiWiz, BioDynaMo, CERN VM-FS, CERNbot, FLUKA, Indico, Invenio, REMUS, ROOT, Data Analysis, Artificial Intelligence, Neural Networks',
-				'Magnets': 'Electromagnetism, Dipole magnet, Quadrupole magnet, 3D Magnetic Sensor Calibrator, GaToroid, Magnet Power supplies',
-				'Biophysics': 'BioDynaMo, Particle Therapy, Alpha Therapy, gamma-MRI , Medical ventilators',
-				'Materials': 'Front-end readout, Micro Chemical Vias, Thermal management materials, Thin film coatings',
-				'Mechanics': 'Compact Universal Orbital Cutter, Mounting mechanisms, Precision positioning',
-				'Lasers': 'Heavy ions, Charged particles, Optical lenses, Precision Laser Inclinometer',
-				'Microelectronics': 'PicoTDC, DC-DC converter, Front-end readout electronics, GEMPix, KiCad EDA , Medipix, Micro Chemical Vias, Timepix',
-				'Particle Tracking & Radiation Monitoring': 'Gas electron multiplier, Medipix, Strip SiPM, Timepix',
-				'Radio Frequency Technology': 'Coaxial Pulse Conditioner, Compact Linear Proton Accelerator, Thin film coatings, Gamma rays',
-				'Superconductivity': 'Thin film coatings, Cooling systems',
-				'Theoretical Phyiscs': 'Standard Model, Beyond the Standard Model, String Theory, Higgs boson, Energy'
-			}
+             // Mousedown on the resize handle (for resizing)
+             resizeHandle.addEventListener('mousedown', (e) => {
+                e.preventDefault(); // Prevent default browser drag
+                e.stopPropagation(); // Stop event bubbling to image or container click handlers
+                isResizing = true;
+                // Capture the current *displayed* width/height at the start of the drag
+                originalWidth = image.clientWidth;
+                originalHeight = image.clientHeight;
+                originalX = e.clientX;
+                originalY = e.clientY;
+                image.style.cursor = 'se-resize'; // Set cursor during resize
+             });
 
-			// Gets the categories for an image
-			function getImageCategories(image) {
-				const categoriesStr = image.getAttribute('data-categories');
-				return categoriesStr.split('|');
-			}
+             // Mousemove on the document (for resizing)
+             document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
 
-			// Call the function for each image so it can be selected, resized, and scanned for categories
-			const resizableImages = document.querySelectorAll('.resizable');
-			resizableImages.forEach((image, index) => {
-				enableResizing(image);
+                const newWidth = originalWidth + (e.clientX - originalX);
+                // The aspect ratio is maintained here:
+                const newHeight = originalHeight * (newWidth / originalWidth);
 
-				image.addEventListener('click', () => {
-					handleImageSelection(image);
+                // Limit minimum size
+                const minSize = 50;
+                if (newWidth > minSize) { // Only check width as height scales proportionally
+                    image.style.width = newWidth + 'px';
+                    image.style.height = newHeight + 'px';
+                }
+             });
 
-					// Changes the weight of the categories based on the image size
-					const selectedCategories = getImageCategories(image);
-					selectedCategories.forEach(tag => {
-						const currentWeight = weighting[tag] || 0;
-						weighting[tag] = currentWeight + image.clientWidth * image.clientHeight;
-					});
+             // Mouseup on the document (to finalize resizing)
+             document.addEventListener('mouseup', () => {
+                if (isResizing) {
+                    isResizing = false;
+                    image.style.cursor = 'pointer'; // Reset cursor after resize
+                    updateWeighting(); // Update weighting based on new size
+                }
+             });
+          }
 
-					// Adds the dictionary items to an array which also stores the weight
-					weightingArray = Object.entries(weighting);
-				});
-			});
+          // Attach interactions to all image containers
+          const resizableImages = document.querySelectorAll('.resizable');
+          resizableImages.forEach((image) => {
+             setupImageInteractions(image);
+          });
 
-			const showRecommendationsButton = document.getElementById('show-recommendations-button');
-			const recommendationsDiv = document.getElementById('recommendations');
+          const showRecommendationsButton = document.getElementById('show-recommendations-button');
+          const recommendationsDiv = document.getElementById('recommendations');
 
-			showRecommendationsButton.addEventListener('click', () => {
-				// Sorts the array into a list with a descending order of weight
-				weightingArray.sort((a, b) => b[1] - a[1]);
+          showRecommendationsButton.addEventListener('click', () => {
+             // Filter out categories with zero or negative weight if any, before sorting
+             const activeWeightingArray = Object.entries(weighting).filter(([tag, weight]) => weight > 0);
 
-				// Returns the recommended categories in descending order of weight to the user
-				let recommendationsHTML = '';
-				for (let i = 0; i < Math.min(3, weightingArray.length); i++) {
-					recommendationsHTML += `<p>Area of interest ${i + 1}: ${weightingArray[i][0]}</p> 
-											<p style='margin-left: 25px;'>Futher topics to explore in this area are: ${subcategory_mapping[weightingArray[i][0]]}</p>`;
-				}
+             // Sorts the array into a list with a descending order of weight
+             activeWeightingArray.sort((a, b) => b[1] - a[1]);
 
-				// Display the recommendations on the screen
-				recommendationsDiv.innerHTML = recommendationsHTML;
-			});
-		});
-	</script>
+             // Returns the recommended categories in descending order of weight to the user
+             let recommendationsHTML = '<h3>Your Top Research Areas:</h3>';
+             if (activeWeightingArray.length === 0) {
+                 recommendationsHTML += '<p>Please select and/or resize some images to get recommendations!</p>';
+             } else {
+                 for (let i = 0; i < Math.min(3, activeWeightingArray.length); i++) {
+                    recommendationsHTML += `<p><strong>Area of interest ${i + 1}: ${activeWeightingArray[i][0]}</strong></p>
+                                      <p style='margin-left: 25px;'>Futher topics to explore in this area are: ${subcategory_mapping[activeWeightingArray[i][0]]}</p>`;
+                 }
+             }
+
+             // Display the recommendations on the screen
+             recommendationsDiv.innerHTML = recommendationsHTML;
+          });
+       });
+    </script>
 </body>
 </html>
