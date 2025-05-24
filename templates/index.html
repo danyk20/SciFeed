@@ -4,7 +4,8 @@
     <link rel="stylesheet" href="../static/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;1,100;1,200;1,300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;1,100;1,200;1,300&display=swap"
+          rel="stylesheet">
     <title>SciFeed</title>
     <style>
         body {
@@ -21,6 +22,7 @@
             height: 100vh; /* Set the container height to fill the viewport */
             font-family: "Poppins", "PT Sans", Calibri, Tahoma, sans-serif;
         }
+
         header {
             background-color: #0033A0; /* Blue header background color */
             color: #fff; /* White text color */
@@ -28,6 +30,7 @@
             padding: 30px 0;
             font-size: x-large;
         }
+
         .container {
             text-align: center;
             padding: 20px;
@@ -36,6 +39,7 @@
             border-radius: 5px;
             margin-top: 20px;
         }
+
         input[type="text"] {
             padding: 10px;
             font-size: 16px;
@@ -43,6 +47,7 @@
             border-radius: 5px;
             width: 250px;
         }
+
         input[type="submit"] {
             padding: 10px 20px;
             font-size: 16px;
@@ -59,37 +64,66 @@
             grid-gap: 10px;
             padding: 20px;
         }
+
         .collage img {
             max-width: 100%;
             max-height: 150px;
         }
+
+        .loader {
+            display: none; /* Hidden by default */
+            border: 6px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 6px solid #4CAF50;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
-    <header>
-        <h1>What will your research topic be?</h1>
-    </header>
-    
-    <div class="container">
-        <form method="post">
-            <input type="text" name="textbox" placeholder="Research field..." style="background-color: #999999;">
-            <br>
-            <input type="submit" value="Search">
-        </form>
-    </div>
-    
-    <h2 style="color: white;"> Don't know where to start? Select and rate pictures that interest you!</h2>
-    <div class="container">
-        <a href="/moodBoard">
-        <div class ="collage">
-        <img src="../static/assets/random_picture_1.jpg" alt="Picture 1">
-        <img src="../static/assets/random_picture_2.png" alt="Picture 2">
-        <img src="../static/assets/random_picture_3.jpg" alt="Picture 3">
-        <img src="../static/assets/random_picture_4.jpg" alt="Picture 4">
-        <img src="../static/assets/random_picture_5.jpg" alt="Picture 5">
-        <img src="../static/assets/random_picture_6.jpg" alt="Picture 6">
+<header>
+    <h1>What will your research topic be?</h1>
+</header>
+
+<div class="container">
+    <form method="post" onsubmit="showLoader()">
+        <input type="text" name="textbox" placeholder="Research field..." style="background-color: #999999;">
+        <br>
+        <input type="submit" value="Search">
+    </form>
+    <div id="loading" class="loader"></div>
+    <p>Summarizing Papers... Please wait!</p>
+</div>
+
+<script>
+    function showLoader() {
+        document.getElementById("loading").style.display = "block"; // Show loader and text
+    }
+</script>
+
+<h2 style="color: white;"> Don't know where to start? Select and rate pictures that interest you!</h2>
+<div class="container">
+    <a href="/moodBoard">
+        <div class="collage">
+            <img src="../static/assets/random_picture_1.jpg" alt="Picture 1">
+            <img src="../static/assets/random_picture_2.png" alt="Picture 2">
+            <img src="../static/assets/random_picture_3.jpg" alt="Picture 3">
+            <img src="../static/assets/random_picture_4.jpg" alt="Picture 4">
+            <img src="../static/assets/random_picture_5.jpg" alt="Picture 5">
+            <img src="../static/assets/random_picture_6.jpg" alt="Picture 6">
         </div>
-        </a>
-    </div>
+    </a>
+</div>
 </body>
 </html>
