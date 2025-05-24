@@ -46,12 +46,21 @@ def chat() -> str:
         paper_text = ""
     user_input = request.form['user_input']
     if user_input.lower() == "exit":
-        response = "Chatbot: Goodbye!"
+        return render_template('index.html')
     else:
-        answers = qa_model(question=user_input, context=paper_text)
-        response = user_input + " -> Chatbot answer: " + answers['answer']
-        response += " [" + str(round(answers['score'] * 100, 2)) + '% confidence]'
-    return render_template('chat.html', response=response)
+        result = qa_model(question=user_input, context=paper_text)
+        start_index = result['start']
+        end_index = result['end']
+        before_snippet = highlighted_snippet = after_snippet = ""
+        if start_index is not None and end_index is not None:
+            before_snippet = paper_text[:start_index]
+            highlighted_snippet = paper_text[start_index:end_index]
+            after_snippet = paper_text[end_index:]
+        response: str = user_input + " -> Chatbot answer: " + result['answer']
+        response += " [" + str(round((result['score'] * 100), 2)) + '% confidence]'
+
+    return render_template('chat.html', response=response, snippet=highlighted_snippet, before=before_snippet,
+                           after=after_snippet)
 
 
 app.run()

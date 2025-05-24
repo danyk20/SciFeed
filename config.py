@@ -9,3 +9,6 @@ NUMBER_OF_VIDEOS = 5
 
 
 CERN_DOCUMENT_SERVER_URL = "https://cds.cern.ch//search"
+
+
+QUESTIONING_MODEL = "deepset/roberta-base-squad2"

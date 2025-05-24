@@ -2,7 +2,9 @@ import requests
 from PyPDF2 import PdfReader
 from transformers import pipeline
 
-qa_model = pipeline("question-answering")
+from config import QUESTIONING_MODEL
+
+qa_model = pipeline("question-answering", QUESTIONING_MODEL)
 
 
 def download_pdf_from_link(url: str, save_path: str):

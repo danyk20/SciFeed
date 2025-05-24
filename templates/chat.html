@@ -2,15 +2,169 @@
 <html>
 <head>
     <title>Chatbot Response</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .slider-container {
+            width: 70%;
+            max-width: 800px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+        }
+
+        .slider-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+        }
+
+        .academic-snippet {
+            width: 70%;
+            max-width: 800px;
+            margin-top: 20px;
+            padding: 25px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            line-height: 1.6;
+            font-size: 1.1em;
+            color: #555;
+            position: relative;
+        }
+
+        .academic-snippet::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px dashed #bdc3c7;
+            border-radius: 10px;
+            z-index: -1;
+        }
+
+        .academic-snippet::after {
+            content: attr(data-label);
+            position: absolute;
+            top: 10px;
+            left: 25px;
+            font-size: 0.9em;
+            color: #999;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
-    <h1>{{ response }}</h1>
-    <button onclick="goBack()">Change the question</button>
-    <script>
-        function goBack() {
-            sessionStorage.setItem('cameFromBack', 'true');
-            window.history.back();
-        }
-    </script>
+<h1>{{ response }}</h1>
+<button onclick="goBack()">Change the question</button>
+
+<div class="slider-container">
+    <div class="slider-group">
+        <label for="beforeTextLength">Before Snippet Length:</label>
+        <input type="range" id="beforeTextLength" min="0" max="100" value="100"
+               oninput="updateSnippetLength('before', this.value)">
+    </div>
+    <div class="slider-group">
+        <label for="afterTextLength">After Snippet Length:</label>
+        <input type="range" id="afterTextLength" min="0" max="100" value="100"
+               oninput="updateSnippetLength('after', this.value)">
+    </div>
+</div>
+
+<div class="academic-snippet" data-label="Before">
+    <p id="beforeText">{{ before }}</p>
+    <p id="beforeTextHidden" hidden="hidden">{{ before }}</p>
+</div>
+
+<div class="academic-snippet" data-label="Context">
+    <p>{{ snippet }}</p>
+</div>
+
+<div class="academic-snippet" data-label="After">
+    <p id="afterText">{{ after }}</p>
+    <p id="afterTextHidden" hidden="hidden">{{ after }}</p>
+</div>
+
+<script>
+    function goBack() {
+        sessionStorage.setItem('cameFromBack', 'true');
+        window.history.back();
+    }
+
+    function updateSnippetLength(snippetType, percentage) {
+        const targetElementId = snippetType === 'before' ? 'beforeText' : 'afterText';
+        const targetElement = document.getElementById(targetElementId);
+        const sourceElement = document.getElementById(targetElementId + "Hidden");
+
+        if (!targetElement) return;
+
+        const originalText = sourceElement.textContent.trim();
+        const words = originalText.split(' ');
+        const numWordsToShow = Math.ceil(words.length * (percentage / 100));
+        targetElement.textContent = snippetType === 'before' ? words.slice(-numWordsToShow).join(' ') : words.slice(0, numWordsToShow).join(' ');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateSnippetLength('before', document.getElementById('beforeTextLength').value);
+        updateSnippetLength('after', document.getElementById('afterTextLength').value);
+    });
+</script>
 </body>
 </html>
