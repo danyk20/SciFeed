@@ -1,35 +1,41 @@
+from typing import List, Dict, Any
+
 import requests
 from flask import Flask, request, render_template
 
 from answers import qa_model
 from chatboot import read_pdf_from_url, download_pdf_from_link
 from classes import Paper, Video
+from config import NUMBER_OF_PAPERS, NUMBER_OF_VIDEOS
 
 app = Flask(__name__)
+
+
 # pdf_url = "https://cds.cern.ch/record/2863895/files/2307.01612.pdf"  # Replace with the actual URL of the PDF
 
 
-
 @app.route('/', methods=['GET', 'POST'])
-def index():
+def index() -> str:
     if request.method == 'POST':
-        user_input = request.form['textbox']
-        paper_urls = query_to_url(user_input)
-        video_urls = query_to_url(user_input, videos=True, number_of_results=3) 
-        return render_template('feed.html', papers=paper_urls, videos = video_urls)
+        user_input: str = request.form['textbox']
+        paper_urls: List[Paper] = query_to_url(user_input, NUMBER_OF_PAPERS)
+        video_urls: List[Video] = query_to_url(user_input, NUMBER_OF_VIDEOS, videos=True)
+        return render_template('feed.html', papers=paper_urls, videos=video_urls)
     return render_template('index.html')
 
+
 @app.route('/ask')
-def ask():
+def ask() -> str:
     return render_template('ask.html')
 
 
 @app.route('/moodBoard', methods=['GET', 'POST'])
-def mood():
+def mood() -> str:
     return render_template('mood_board.html')
 
+
 @app.route('/chat', methods=['POST'])
-def chat():
+def chat() -> str:
     paper_text = read_pdf_from_url(request.form['paper_url'])
     user_input = request.form['user_input']
     if user_input.lower() == "exit":
@@ -40,7 +46,8 @@ def chat():
         response += " - I am " + str(round(answers['score'] * 100, 2)) + '% confident with that answer'
     return render_template('chat.html', response=response)
 
-def get_html():
+
+def get_html() -> str:
     file_path = "templates/index.html"
 
     try:
@@ -53,15 +60,27 @@ def get_html():
     return content
 
 
-def query_cds(query, videos=False):
-    """query the Cern Document Server using an HTTP request. Can be toggled to request videos or papers."""
+def query_cds(query: str, videos: bool = False) -> List[Dict[str, Any]]:
+    """
+    Queries the CERN Document Server (CDS) for research papers or videos.
+
+    This function sends an HTTP GET request to the CDS search API.
+    It can be configured to search specifically for videos (presentations and talks)
+    or for general documents (papers).
+
+    :param query: The search string to be used for the query (e.g., "Higgs boson").
+    :param videos: If set to `True`, the query will be restricted to "Presentations & Talks".
+                   If `False` (default), it will search for all document types.
+    :return: A JSON object containing the search results if the request is successful (status code 200).
+             Returns `None` and prints an error message if the request fails.
+    """
     params = {"p": query, "of": "recjson"}
     if videos:
         params["c"] = "Presentations & Talks"
 
     response = requests.get('https://cds.cern.ch//search', params=params)
 
-    # never got a different response code but it is probably good to test for it anyways
+    # never got a different response code, but it is probably good to test for it anyway
     if response.status_code == 200:
         return response.json()
     else:
@@ -69,25 +88,43 @@ def query_cds(query, videos=False):
         return None
 
 
-def get_pdfs_from_json(jsonfile, number_of_files=5):
-    """get the first n pdf urls from the search response"""
-    papers = []
+def get_pdfs_from_json(jsonfile: List[Dict[str, Any]], number_of_files: int = NUMBER_OF_PAPERS) -> List[Paper]:
+    """
+    Extracts a specified number of Paper objects with valid PDF URLs from a CDS search response.
+
+    This function iterates through a list of JSON entries (typically from the CERN Document Server API response) and
+    attempts to create `Paper` objects from each. It collects `Paper` objects that have a valid URL until the desired
+    number of files is reached or all entries have been processed.
+
+    :param jsonfile: A list of dictionaries, where each dictionary represents a document entry
+                     from the CDS search API response. Each entry is expected to potentially
+                     contain information from which a `Paper` object can be initialized,
+                     including a URL.
+    :param number_of_files: The maximum number of `Paper` objects (with valid URLs) to retrieve.
+                            Default is 5.
+    :return: A list of `Paper` objects, each containing a URL to a PDF document.
+             The list will contain at most `number_of_files` elements.
+             Returns an empty list if no valid papers are found or if `jsonfile` is empty.
+    """
+    papers: List[Paper] = []
     for entry in jsonfile:
         try:
             paper = Paper(entry)
             if paper.url:
                 papers.append(paper)
+            else:
+                print("Skipping because there is no PDF to display for: " + paper.title)
             if len(papers) == number_of_files:
                 break
-        except KeyError:
-            pass
-        
+        except Exception as e:
+            print(f"Error: {e}")
+            print(f"The problematic entry was:: {entry}. Skipping this entry.")
     return papers
 
 
-def get_videos_from_json(jsonfile, number_of_files=5, ):
+def get_videos_from_json(jsonfile, number_of_files=NUMBER_OF_VIDEOS) -> List[Video]:
     """get the first n video urls from the search response"""
-    videos=[]
+    videos: list[Video] = []
     for entry in jsonfile:
         try:
             video = Video(entry)
@@ -100,9 +137,9 @@ def get_videos_from_json(jsonfile, number_of_files=5, ):
     return videos
 
 
-def query_to_url(query, videos=False, number_of_results=5):
+def query_to_url(query: str, number_of_results: int, videos=False) -> List[Paper | Video]:
     """returns the file urls of the first 'number_of_results' results, should be <=10
-    Can be toggled to either return pdfs or video urls"""
+    Can be toggled to either return PDFs or video urls"""
     jsonfile = query_cds(query, videos=videos)
     if videos:
         return get_videos_from_json(jsonfile, number_of_files=number_of_results)
