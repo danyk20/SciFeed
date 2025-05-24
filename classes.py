@@ -3,24 +3,31 @@ from summary import get_summary
 
 class Paper:
     def __init__(self, json_element: dict) -> None:
-        self.title = json_element.get('title', {}).get('title', 'Untitled Paper')
-        self.abstract = json_element.get('abstract', {}).get('summary', '')
+        self.title: str = json_element.get('title', {}).get('title', 'Untitled Paper')
+        abstracts: list[dict] | dict = json_element.get('abstract', {})
+        if isinstance(abstracts, list):
+            if abstracts:
+                for abstract in abstracts:
+                    self.abstract: str = abstract.get("summary", "")
+                    if self.abstract:
+                        break
+            else:
+                self.abstract: str = ""
+        else:
+            self.abstract: str = abstracts.get('summary', '')
         if not self.abstract:
             print(f"Warning: No abstract found for '{self.title}'.")
-        self.url = None
-        pdf_files = [file for file in json_element.get('files', []) if
-                     file.get('eformat') and '.pdf' in file.get('eformat').lower()]
-        if pdf_files:
-            self.url = pdf_files[0].get('url')
-        if len(pdf_files) > 1:
-            print(f"Warning: {len(pdf_files)} PDF files found for '{self.title}'. Using first other are ignored!")
-
-        self.summary = get_summary(self.abstract) if self.abstract else "No summary available."
+        self.urls: list[str] = []
+        pdf_files: list = [file for file in json_element.get('files', []) if
+                           file.get('eformat') and '.pdf' in file.get('eformat').lower()]
+        for pdf_file in pdf_files:
+            self.urls.append(pdf_file.get('url'))
+        self.summary: str = get_summary(self.abstract) if self.abstract else "No summary available."
 
     def __repr__(self) -> str:
         return (
             f"{{'title': '{self.title}', "
-            f"'url': '{self.url}', "
+            f"'url': '{self.urls}', "
             f"'summary': '{self.summary}'}}"
         )
 

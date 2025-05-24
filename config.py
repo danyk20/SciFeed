@@ -6,3 +6,6 @@ SUMMARIZATION_SAMPLING = False
 
 NUMBER_OF_PAPERS = 5
 NUMBER_OF_VIDEOS = 5
+
+
+CERN_DOCUMENT_SERVER_URL = "https://cds.cern.ch//search"

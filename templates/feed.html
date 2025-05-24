@@ -36,7 +36,15 @@
             {% for item in papers %}
             <div class="paper-container">
                 <p>{{item.summary}}</p>
-                <p><a href="{{ item.url }}"> Go to the paper...</a></p>
+                <p><a href="{{ item.urls[0] }}">Go to the paper...</a></p>
+                {% if item.urls|length > 1 %}
+                    <p>Related documents:</p>
+                    <ul>
+                        {% for url in item.urls[1:] %}
+                            <li><a href="{{ url }}">Related Document {{ loop.index }}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </div>
             {% endfor %}
     </div>
