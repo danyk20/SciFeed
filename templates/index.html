@@ -1,80 +1,102 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" href="../static/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;1,100;1,200;1,300&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <title>SciFeed</title>
     <style>
         body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0033A0; /* Dominant Blue Background */
+            color: #fff; /* White Text for Readability */
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
+            justify-content: flex-start; /* Align content to the top */
+            min-height: 100vh;
             margin: 0;
-            background-color: #0033A0;
-            display: flex;
-            flex-direction: column; /* Set flex container to be a column */
-            align-items: center; /* Center content horizontally */
-            justify-content: center; /* Center content vertically */
-            height: 100vh; /* Set the container height to fill the viewport */
-            font-family: "Poppins", "PT Sans", Calibri, Tahoma, sans-serif;
+            padding-top: 20px;
         }
 
         header {
-            background-color: #0033A0; /* Blue header background color */
-            color: #fff; /* White text color */
+            background-color: #002280; /* A slightly darker blue for the header */
+            color: #fff;
             text-align: center;
-            padding: 30px 0;
-            font-size: x-large;
+            padding: 20px 0;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin: 0;
         }
 
         .container {
+            background-color: #e0f7fa; /* Light blue for container */
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
             text-align: center;
-            padding: 20px;
-            color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
         input[type="text"] {
-            padding: 10px;
+            padding: 12px 15px;
             font-size: 16px;
             border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 250px;
+            border-radius: 6px;
+            width: calc(100% - 30px);
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            background-color: #f0f0f0; /* Light gray input background */
         }
 
         input[type="submit"] {
-            padding: 10px 20px;
+            padding: 12px 25px;
             font-size: 16px;
-            background-color: #4CAF50;
+            background-color: #4caf50;
             color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
         }
 
         .collage {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-gap: 15px;
             padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .collage img {
             max-width: 100%;
-            max-height: 150px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .collage img:hover {
+            transform: scale(1.05);
         }
 
         .loader {
-            display: none; /* Hidden by default */
+            display: none;
             border: 6px solid #f3f3f3;
             border-radius: 50%;
-            border-top: 6px solid #4CAF50;
+            border-top: 6px solid #4caf50;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
@@ -89,9 +111,23 @@
                 transform: rotate(360deg);
             }
         }
-        /* Added style to hide the text initially */
+
         #loading-text {
             display: none;
+            text-align: center;
+            margin-top: 10px;
+            color: #333; /* White loading text */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container, .collage {
+                width: 95%;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
         }
     </style>
 </head>
@@ -102,7 +138,9 @@
 
 <div class="container">
     <form method="post" onsubmit="showLoader()">
-        <input type="text" name="textbox" placeholder="Research field..." style="background-color: #999999;">
+        <label>
+            <input type="text" name="textbox" placeholder="Research field..." style="background-color: #f0f0f0;">
+        </label>
         <br>
         <input type="submit" value="Search">
     </form>
@@ -117,7 +155,8 @@
     }
 </script>
 
-<h2 style="color: white;"> Don't know where to start? Select and rate pictures that interest you!</h2>
+<h2 style="color: #fff; text-align: center; margin-top: 30px;">Don't know where to start? Select and rate pictures that
+    interest you!</h2>
 <div class="container">
     <a href="/moodBoard">
         <div class="collage">
