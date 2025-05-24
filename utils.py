@@ -3,7 +3,7 @@ from typing import List, Dict, Any
 import requests
 
 from classes import Paper, Video
-from config import NUMBER_OF_PAPERS, NUMBER_OF_VIDEOS, CERN_DOCUMENT_SERVER_URL
+from config import NUMBER_OF_PAPERS, NUMBER_OF_VIDEOS, CERN_DOCUMENT_SERVER_URL, REQUESTED_RESULTS
 
 
 def get_html() -> str:
@@ -33,7 +33,7 @@ def query_cds(query: str, videos: bool = False) -> List[Dict[str, Any]]:
     :return: A JSON object containing the search results if the request is successful (status code 200).
              Returns `None` and prints an error message if the request fails.
     """
-    params = {"p": query, "of": "recjson"}
+    params = {"p": query, "of": "recjson", "rg": REQUESTED_RESULTS}
     if videos:
         params["c"] = "Presentations & Talks"
 
