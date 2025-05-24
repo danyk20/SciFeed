@@ -3,7 +3,7 @@ from typing import List
 from flask import Flask, request, render_template
 
 from answers import qa_model
-from chatboot import read_pdf_from_url, download_pdf_from_link
+from chatboot import read_pdf_from_url, download_pdf_from_link, read_pdf_from_file
 from classes import Paper, Video
 from config import NUMBER_OF_PAPERS, NUMBER_OF_VIDEOS
 from utils import query_to_url
@@ -36,7 +36,15 @@ def mood() -> str:
 
 @app.route('/chat', methods=['POST'])
 def chat() -> str:
-    paper_text = read_pdf_from_url(request.form['paper_url'])
+    paper_input_type = request.form['paper_input_type']
+    if paper_input_type == "url":
+        paper_text = read_pdf_from_url(request.form['paper_url'])
+    elif paper_input_type == 'file':
+        path = request.files['paper_file']
+        paper_text = read_pdf_from_file(path)
+    else:
+        print("Unsupported input type.")
+        paper_text = ""
     user_input = request.form['user_input']
     if user_input.lower() == "exit":
         response = "Chatbot: Goodbye!"

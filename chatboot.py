@@ -4,13 +4,18 @@ from PyPDF2 import PdfReader
 from answers import qa_model
 
 
-def download_pdf_from_link(url, save_path):
+def download_pdf_from_link(url: str, save_path: str):
+    """
+    Downloads a PDF file from a given URL and saves it to a specified path.
+
+    :param url: The URL of the PDF file to download.
+    :param save_path: The local path where the downloaded PDF will be saved.
+    :return: None
+    """
     try:
-        # Send a GET request to the URL
         response = requests.get(url, stream=True)
         response.raise_for_status()  # Raise an exception for unsuccessful responses
 
-        # Check if the response content is PDF data
         if response.headers['content-type'] == 'application/pdf':
             with open(save_path, 'wb') as file:
                 # Write the content to the file in chunks
@@ -23,15 +28,36 @@ def download_pdf_from_link(url, save_path):
         print(f"An error occurred while downloading the PDF: {e}")
 
 
-def read_pdf_from_url(url):
+def read_pdf_from_url(url: str) -> str:
+    """
+    Reads the content of a PDF file from a given URL.
+
+    This function downloads a PDF from the specified URL to a temporary location,
+    then uses read_pdf_from_file() to extract and return all text content from the PDF..
+
+    :param url: The URL of the PDF file to be read.
+    :return: A string containing all extracted text from the PDF, or an empty string if an error occurs.
+    """
     try:
         path = 'tmp/paper.pdf'
         download_pdf_from_link(url, path)
+    except Exception as e:
+        print(f"Error: {e}")
+        return ""
+    return read_pdf_from_file(path)
 
-        # Initialize PyPDF2 PdfReader to read the PDF content
+
+def read_pdf_from_file(path: str) -> str:
+    """
+    Reads the content of a PDF file from a given path.
+
+    This uses PyPDF2 to extract and return all text content from the PDF.
+
+    :param path: The path of the PDF file to be read.
+    :return: A string containing all extracted text from the PDF, or an empty string if an error occurs.
+    """
+    try:
         pdf_reader = PdfReader(path)
-
-        # Extract text from all pages
         pdf_text = ""
         for page in pdf_reader.pages:
             pdf_text += page.extract_text()
@@ -54,7 +80,6 @@ def chatbot(paper_text):
             answers = qa_model(question=user_input, context=paper_text)
             print("Chatbot answer: " + answers['answer'])
             print("I am " + str(round(answers['score'] * 100, 2)) + '% confident')
-
 
 # Example usage:
 # pdf_url = "https://is.muni.cz/auth/th/n3kmo/Automated_problem_generation_for_cybersecurity_game_Daniel_Kosc.pdf"  # Replace with the actual URL of the PDF
