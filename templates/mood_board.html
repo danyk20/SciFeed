@@ -262,12 +262,9 @@
 
     <script>
        document.addEventListener('DOMContentLoaded', () => {
-          // Dictionary to store the tags and their weightages based on user selection
           let weighting = {};
-          // List which will store descending order of weightages for the respective categories
           let weightingArray = [];
 
-          // Broad categories that the images are tagged with (kept from your original code)
           let categories = [
              'Accelerators', 'Beam systems', 'Cryogenics', 'Detectors',
              'Electronics', 'Industrial Controls & Simulations', 'Cosmology & Astroparticle Physics',
@@ -277,7 +274,6 @@
              'Radio Frequency Technology', 'Superconductivity', 'Theoretical Physics'
           ];
 
-          // The subcategories that relate to the image categories (kept from your original code)
           let subcategory_mapping = {
              'Accelerators': 'LHC, Synchotron, Linear Accelerators, Linear Colliders',
              'Beam systems': 'Beam line, Jets, Collimators, Proton beams, DAQ, DQM',
@@ -299,15 +295,13 @@
              'Theoretical Phyiscs': 'Standard Model, Beyond the Standard Model, String Theory, Higgs boson, Energy'
           };
 
-          // Gets the categories for an image
           function getImageCategories(image) {
              const categoriesStr = image.getAttribute('data-categories');
              return categoriesStr.split('|');
           }
 
-          // Central function to update weighting based on selection and size
           function updateWeighting() {
-              weighting = {}; // Reset weighting
+              weighting = {};
               document.querySelectorAll('.resizable.selected').forEach(selectedImage => {
                   const selectedCategories = getImageCategories(selectedImage);
                   selectedCategories.forEach(tag => {
@@ -319,25 +313,21 @@
               weightingArray.sort((a, b) => b[1] - a[1]);
           }
 
-          // Function to enable resizing and selection
           function setupImageInteractions(image) {
-             const imageContainer = image.closest('.image-container'); // Get the parent container
-             const resizeHandle = imageContainer.querySelector('.resize-handle'); // Get the specific handle
+             const imageContainer = image.closest('.image-container');
+             const resizeHandle = imageContainer.querySelector('.resize-handle');
 
              let isResizing = false;
              let originalX, originalY, originalWidth, originalHeight;
-             let clickedForSelection = false; // Flag to check if click was for selection
+             let clickedForSelection = false;
 
-             // Mousedown on the image itself (for selection)
              image.addEventListener('mousedown', (e) => {
-                // Only handle selection click if not clicking the resize handle
                 if (e.target !== resizeHandle) {
-                    e.preventDefault(); // Prevent default drag behavior (e.g., image drag)
+                    e.preventDefault();
                     clickedForSelection = true;
                 }
              });
 
-             // Mouseup on the document (to finalize selection click)
              document.addEventListener('mouseup', () => {
                  if (clickedForSelection) {
                      image.classList.toggle('selected');
@@ -347,46 +337,40 @@
              });
 
 
-             // Mousedown on the resize handle (for resizing)
              resizeHandle.addEventListener('mousedown', (e) => {
-                e.preventDefault(); // Prevent default browser drag
-                e.stopPropagation(); // Stop event bubbling to image or container click handlers
+                e.preventDefault();
+                e.stopPropagation();
                 isResizing = true;
-                // Capture the current *displayed* width/height at the start of the drag
                 originalWidth = image.clientWidth;
                 originalHeight = image.clientHeight;
                 originalX = e.clientX;
                 originalY = e.clientY;
-                image.style.cursor = 'se-resize'; // Set cursor during resize
+                image.style.cursor = 'se-resize';
              });
 
-             // Mousemove on the document (for resizing)
              document.addEventListener('mousemove', (e) => {
                 if (!isResizing) return;
 
                 const newWidth = originalWidth + (e.clientX - originalX);
-                // The aspect ratio is maintained here:
+
                 const newHeight = originalHeight * (newWidth / originalWidth);
 
-                // Limit minimum size
                 const minSize = 50;
-                if (newWidth > minSize) { // Only check width as height scales proportionally
+                if (newWidth > minSize) {
                     image.style.width = newWidth + 'px';
                     image.style.height = newHeight + 'px';
                 }
              });
 
-             // Mouseup on the document (to finalize resizing)
              document.addEventListener('mouseup', () => {
                 if (isResizing) {
                     isResizing = false;
-                    image.style.cursor = 'pointer'; // Reset cursor after resize
-                    updateWeighting(); // Update weighting based on new size
+                    image.style.cursor = 'pointer';
+                    updateWeighting();
                 }
              });
           }
 
-          // Attach interactions to all image containers
           const resizableImages = document.querySelectorAll('.resizable');
           resizableImages.forEach((image) => {
              setupImageInteractions(image);
@@ -396,13 +380,10 @@
           const recommendationsDiv = document.getElementById('recommendations');
 
           showRecommendationsButton.addEventListener('click', () => {
-             // Filter out categories with zero or negative weight if any, before sorting
              const activeWeightingArray = Object.entries(weighting).filter(([tag, weight]) => weight > 0);
 
-             // Sorts the array into a list with a descending order of weight
              activeWeightingArray.sort((a, b) => b[1] - a[1]);
 
-             // Returns the recommended categories in descending order of weight to the user
              let recommendationsHTML = '<h3>Your Top Research Areas:</h3>';
              if (activeWeightingArray.length === 0) {
                  recommendationsHTML += '<p>Please select and/or resize some images to get recommendations!</p>';
