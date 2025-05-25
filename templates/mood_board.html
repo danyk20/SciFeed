@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Image Selection and Resizing</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -8,22 +8,22 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #0033A0; /* Dominant Blue Background */
-            color: #fff; /* White Text for Readability */
+            background-color: #0033A0; 
+            color: #fff; 
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px; /* Add some padding around the content */
-            box-sizing: border-box; /* Include padding in element's total width and height */
+            padding: 20px; 
+            box-sizing: border-box;
         }
 
         h1, h2, p {
             color: #fff;
             text-align: center;
             margin-bottom: 15px;
-            max-width: 900px; /* Limit width for better readability */
+            max-width: 900px; 
         }
 
         h1 {
@@ -39,62 +39,60 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px; /* Space between image containers */
+            gap: 20px; 
             padding: 20px 0;
-            max-width: 1200px; /* Max width for the gallery */
+            max-width: 1200px; 
             width: 100%;
         }
 
         .image-container {
-            background-color: #e0f7fa; /* Light blue background for image card */
+            background-color: #e0f7fa;
             border-radius: 10px;
             padding: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: inline-block;
-            cursor: pointer; /* Default cursor for selection */
+            cursor: pointer; 
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
-            border: 2px solid transparent; /* Default transparent border */
-            overflow: hidden; /* Ensures content respects border-radius */
-            flex-shrink: 0; /* Prevents shrinking */
-            position: relative; /* Needed for absolute positioning of resize handle or for corner detection */
+            border: 2px solid transparent; 
+            overflow: hidden; 
+            flex-shrink: 0; 
+            position: relative; 
         }
 
         .image-container:hover {
-            transform: translateY(-5px); /* Lift effect on hover */
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* More pronounced shadow */
+            transform: translateY(-5px); 
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); 
         }
 
         .resizable {
             display: block;
-            /* REMOVED: max-width: 200px; */ /* This was causing the issue */
-            width: 200px; /* Set an initial width explicitly */
-            height: auto; /* Let height adjust to maintain aspect ratio initially */
-            border-radius: 5px; /* Slightly rounded corners for images */
-            touch-action: none; /* Prevent browser touch actions like scrolling/zooming */
+            width: 200px; 
+            height: auto; 
+            border-radius: 5px; 
+            touch-action: none; 
         }
 
         .selected {
-            border-color: #4CAF50; /* Green border for selected images */
-            box-shadow: 0 0 0 4px #4CAF50; /* A glowing effect for selection */
+            border-color: #4CAF50; 
+            box-shadow: 0 0 0 4px #4CAF50; 
         }
-
-        /* Styles for the visible resize handle */
+        
         .resize-handle {
             position: absolute;
             width: 20px;
             height: 20px;
             bottom: 0;
             right: 0;
-            background: rgba(0, 51, 160, 0.7); /* Match dominant blue with transparency */
-            border-radius: 0 0 8px 0; /* Rounded only on the corner */
+            background: rgba(0, 51, 160, 0.7); 
+            border-radius: 0 0 8px 0; 
             cursor: se-resize;
-            z-index: 10; /* Ensure it's on top */
+            z-index: 10; 
         }
 
         #show-recommendations-button {
             padding: 12px 25px;
             font-size: 16px;
-            background-color: #4CAF50; /* Green button */
+            background-color: #4CAF50; 
             color: #fff;
             border: none;
             border-radius: 6px;
@@ -105,24 +103,24 @@
         }
 
         #show-recommendations-button:hover {
-            background-color: #45a049; /* Darker green on hover */
+            background-color: #45a049;
         }
 
         #recommendations {
-            background-color: #e0f7fa; /* Light blue background for recommendations */
+            background-color: #e0f7fa; 
             border-radius: 8px;
             padding: 25px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 90%;
             max-width: 700px;
             margin-top: 20px;
-            color: #333; /* Dark text for readability */
+            color: #333; 
             text-align: left;
             line-height: 1.8;
         }
 
         #recommendations p {
-            color: #333; /* Ensure paragraph text inside recommendations is dark */
+            color: #333; 
             margin-bottom: 10px;
         }
 
@@ -131,45 +129,43 @@
         }
 
         #recommendations p strong {
-            color: #0033A0; /* Highlight important parts in recommendations */
+            color: #0033A0; 
         }
-
-        /* Container for the 'Explore further' button */
+        
         .cta-container {
-            background-color: #e0f7fa; /* Light blue background */
+            background-color: #e0f7fa; 
             border-radius: 8px;
             padding: 25px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 90%;
             max-width: 700px;
-            margin-top: 30px; /* More space above this section */
-            color: #333; /* Dark text */
+            margin-top: 30px;
+            color: #333; 
             text-align: center;
         }
 
         .cta-container p {
-            color: #333; /* Dark text for paragraphs */
+            color: #333; 
             margin-bottom: 20px;
         }
 
         .btn-primary {
             padding: 12px 25px;
             font-size: 16px;
-            background-color: #0033A0; /* Blue button */
+            background-color: #0033A0; 
             color: #fff;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            text-decoration: none; /* Remove underline for link */
-            display: inline-block; /* Allows padding and margin */
+            text-decoration: none; 
+            display: inline-block;
         }
 
         .btn-primary:hover {
-            background-color: #002280; /* Darker blue on hover */
+            background-color: #002280; 
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.8em;
@@ -178,15 +174,15 @@
                 font-size: 1em;
             }
             .image-gallery {
-                flex-direction: column; /* Stack images vertically on small screens */
+                flex-direction: column; 
                 align-items: center;
             }
             .image-container {
-                width: 90%; /* Make image containers take more width */
-                max-width: 300px; /* Limit max width for stacking */
+                width: 90%;
+                max-width: 300px; 
             }
             .resizable {
-                max-width: 100%; /* Ensure images fill container */
+                max-width: 100%;
             }
             #recommendations, .cta-container {
                 width: 95%;
@@ -416,8 +412,7 @@
                                       <p style='margin-left: 25px;'>Futher topics to explore in this area are: ${subcategory_mapping[activeWeightingArray[i][0]]}</p>`;
                  }
              }
-
-             // Display the recommendations on the screen
+              
              recommendationsDiv.innerHTML = recommendationsHTML;
           });
        });
