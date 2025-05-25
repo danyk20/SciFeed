@@ -1,7 +1,7 @@
 import os.path
 
 import requests
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 from transformers import pipeline
 
 from config import QUESTIONING_MODEL, TMP_FOLDER
