@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = false
+name = "pypi"
+
+[packages]
+requests = "~=2.32.3"
+flask = "~=3.1.1"
+transformers = "~=4.52.3"
+torch = "~=2.7.0"
+pypdf = "~=5.5.0"
+
+[requires]
+python_version = "3.13"
+python_full_version = "3.13.0"
