@@ -1,6 +1,6 @@
 from typing import List
 
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect
 from requests.models import Response
 
 from chatboot import read_pdf_from_url, read_pdf_from_file, qa_model
