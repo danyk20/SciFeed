@@ -1,6 +1,7 @@
 from typing import List
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for
+from requests.models import Response
 
 from chatboot import read_pdf_from_url, read_pdf_from_file, qa_model
 from classes import Paper, Video
@@ -31,7 +32,7 @@ def mood() -> str:
 
 
 @app.route('/chat', methods=['POST'])
-def chat() -> str:
+def chat() -> Response | str:
     paper_input_type = request.form['paper_input_type']
     if paper_input_type == "url":
         paper_text = read_pdf_from_url(request.form['paper_url'])
@@ -43,7 +44,7 @@ def chat() -> str:
         paper_text = ""
     user_input = request.form['user_input']
     if user_input.lower() == "exit":
-        return render_template('index.html')
+        return redirect("/")
     else:
         result = qa_model(question=user_input, context=paper_text)
         start_index = result['start']
